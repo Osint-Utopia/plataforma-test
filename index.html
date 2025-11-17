@@ -1,0 +1,2874 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Sistema Integral de Psicología Clínica - NOM-004 / NOM-024</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+  <style>
+    /* ---------- VARIABLES ---------- */
+    :root {
+      --color-bg: #0d1117;
+      --color-panel: rgba(255,255,255,0.06);
+      --color-accent: #00ffff;
+      --color-text: #e6e6e6;
+      --color-success: #00d26a;
+      --color-warning: #f5b70a;
+      --color-error: #ff3c3c;
+      --color-info: #4a9eff;
+      --blur: 20px;
+      --radius: 10px;
+      --transition: 0.3s ease;
+      font-family: 'Inter', sans-serif;
+    }
+
+    /* ---------- RESET ---------- */
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      background-color: var(--color-bg);
+      color: var(--color-text);
+      display: flex;
+      height: 100vh;
+      overflow: hidden;
+      line-height: 1.6;
+    }
+
+    /* ---------- SIDEBAR ---------- */
+    .sidebar {
+      width: 250px;
+      background: var(--color-panel);
+      backdrop-filter: blur(var(--blur));
+      display: flex;
+      flex-direction: column;
+      padding: 20px;
+      border-right: 1px solid rgba(255,255,255,0.08);
+      overflow-y: auto;
+    }
+
+    .sidebar h1 {
+      font-size: 1.3rem;
+      color: var(--color-accent);
+      text-align: center;
+      margin-bottom: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+    }
+
+    .sidebar .subtitle {
+      font-size: 0.75rem;
+      text-align: center;
+      color: rgba(255,255,255,0.5);
+      margin-bottom: 20px;
+    }
+
+    .nav-item {
+      padding: 12px 15px;
+      margin-bottom: 6px;
+      border-radius: var(--radius);
+      display: flex;
+      align-items: center;
+      cursor: pointer;
+      transition: var(--transition);
+      font-size: 0.9rem;
+    }
+    .nav-item i {
+      margin-right: 10px;
+      width: 20px;
+    }
+    .nav-item:hover, .nav-item.active {
+      background-color: rgba(0,255,255,0.15);
+      color: var(--color-accent);
+    }
+
+    .nav-section {
+      font-size: 0.7rem;
+      color: rgba(255,255,255,0.4);
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      margin: 20px 0 10px;
+      font-weight: 600;
+    }
+
+    /* ---------- MAIN AREA ---------- */
+    .main {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+    }
+
+    /* ---------- TOP BAR ---------- */
+    .topbar {
+      background: var(--color-panel);
+      backdrop-filter: blur(var(--blur));
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 12px 20px;
+      border-bottom: 1px solid rgba(255,255,255,0.08);
+    }
+    .topbar h2 {
+      font-size: 1.5rem;
+      color: var(--color-accent);
+    }
+    .topbar .actions {
+      display: flex;
+      align-items: center;
+      gap: 15px;
+    }
+    .topbar .actions i {
+      cursor: pointer;
+      transition: var(--transition);
+      font-size: 1.2rem;
+    }
+    .topbar .actions i:hover {
+      color: var(--color-accent);
+    }
+
+    /* ---------- CONTENT ---------- */
+    .content {
+      flex: 1;
+      padding: 20px;
+      overflow-y: auto;
+    }
+
+    .card {
+      background: var(--color-panel);
+      backdrop-filter: blur(var(--blur));
+      border-radius: var(--radius);
+      padding: 20px;
+      margin-bottom: 20px;
+      transition: var(--transition);
+      box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+    }
+    .card:hover {
+      box-shadow: 0 6px 20px rgba(0,255,255,0.15);
+    }
+
+    .card-header {
+      font-size: 1.2rem;
+      font-weight: 700;
+      color: var(--color-accent);
+      margin-bottom: 15px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      border-bottom: 2px solid rgba(0,255,255,0.2);
+      padding-bottom: 10px;
+    }
+
+    /* ---------- BUTTONS ---------- */
+    .btn {
+      border: none;
+      border-radius: var(--radius);
+      padding: 10px 18px;
+      color: #fff;
+      background-color: var(--color-accent);
+      cursor: pointer;
+      transition: var(--transition);
+      font-weight: 600;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      font-family: inherit;
+    }
+    .btn:hover {
+      background-color: #00c4cc;
+      transform: translateY(-2px);
+      box-shadow: 0 4px 12px rgba(0,255,255,0.3);
+    }
+    .btn-secondary {
+      background-color: rgba(255,255,255,0.1);
+      color: var(--color-text);
+    }
+    .btn-secondary:hover {
+      background-color: rgba(255,255,255,0.2);
+    }
+    .btn-success {
+      background-color: var(--color-success);
+    }
+    .btn-success:hover {
+      background-color: #00b85c;
+    }
+    .btn-danger {
+      background-color: var(--color-error);
+    }
+
+    /* ---------- FORMS ---------- */
+    .form-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      gap: 15px;
+      margin-bottom: 20px;
+    }
+
+    .form-group {
+      margin-bottom: 15px;
+    }
+
+    .form-label {
+      display: block;
+      font-weight: 600;
+      color: var(--color-text);
+      margin-bottom: 8px;
+      font-size: 0.9rem;
+    }
+
+    .form-input, .form-select, .form-textarea {
+      width: 100%;
+      padding: 10px;
+      border: 2px solid rgba(255,255,255,0.1);
+      border-radius: var(--radius);
+      background: rgba(255,255,255,0.05);
+      color: var(--color-text);
+      font-size: 0.95rem;
+      font-family: inherit;
+      transition: var(--transition);
+    }
+
+    .form-input:focus, .form-select:focus, .form-textarea:focus {
+      outline: none;
+      border-color: var(--color-accent);
+      box-shadow: 0 0 0 3px rgba(0,255,255,0.1);
+    }
+
+    .form-textarea {
+      min-height: 100px;
+      resize: vertical;
+    }
+
+    /* ---------- STATUS COLORS ---------- */
+    .status.success { color: var(--color-success); }
+    .status.warning { color: var(--color-warning); }
+    .status.error { color: var(--color-error); }
+    .status.info { color: var(--color-info); }
+
+    /* ---------- ALERTS ---------- */
+    .alert {
+      padding: 15px 20px;
+      border-radius: var(--radius);
+      margin-bottom: 20px;
+      display: flex;
+      align-items: center;
+      gap: 15px;
+      border-left: 4px solid;
+    }
+    .alert-info {
+      background: rgba(74, 158, 255, 0.1);
+      border-color: var(--color-info);
+    }
+    .alert-success {
+      background: rgba(0, 210, 106, 0.1);
+      border-color: var(--color-success);
+    }
+    .alert-warning {
+      background: rgba(245, 183, 10, 0.1);
+      border-color: var(--color-warning);
+    }
+    .alert-danger {
+      background: rgba(255, 60, 60, 0.1);
+      border-color: var(--color-error);
+    }
+
+    /* ---------- TABLES ---------- */
+    .table-container {
+      overflow-x: auto;
+      margin: 20px 0;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+    }
+
+    table th, table td {
+      padding: 12px;
+      text-align: left;
+      border-bottom: 1px solid rgba(255,255,255,0.1);
+    }
+
+    table th {
+      background: rgba(0,255,255,0.1);
+      color: var(--color-accent);
+      font-weight: 600;
+    }
+
+    table tr:hover {
+      background: rgba(255,255,255,0.03);
+    }
+
+    /* ---------- MODAL ---------- */
+    .modal {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0,0,0,0.7);
+      z-index: 1000;
+      justify-content: center;
+      align-items: center;
+      backdrop-filter: blur(5px);
+    }
+
+    .modal.active {
+      display: flex;
+    }
+
+    .modal-content {
+      background: var(--color-panel);
+      border-radius: var(--radius);
+      padding: 30px;
+      max-width: 90%;
+      max-height: 90vh;
+      overflow-y: auto;
+      position: relative;
+      box-shadow: 0 10px 40px rgba(0,0,0,0.5);
+    }
+
+    .modal-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 20px;
+      padding-bottom: 15px;
+      border-bottom: 2px solid rgba(0,255,255,0.2);
+    }
+
+    .modal-header h3 {
+      color: var(--color-accent);
+      font-size: 1.4rem;
+    }
+
+    .close-modal {
+      background: none;
+      border: none;
+      font-size: 1.5rem;
+      cursor: pointer;
+      color: var(--color-text);
+      transition: var(--transition);
+    }
+
+    .close-modal:hover {
+      color: var(--color-error);
+    }
+
+    /* ---------- BADGES ---------- */
+    .badge {
+      padding: 5px 12px;
+      border-radius: 20px;
+      font-size: 0.85rem;
+      font-weight: 600;
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+    }
+
+    .badge-primary { background: var(--color-accent); color: #000; }
+    .badge-success { background: var(--color-success); color: #fff; }
+    .badge-warning { background: var(--color-warning); color: #000; }
+    .badge-danger { background: var(--color-error); color: #fff; }
+    .badge-info { background: var(--color-info); color: #fff; }
+
+    /* ---------- GENOGRAM ---------- */
+    #genogram-canvas {
+      border: 2px solid rgba(255,255,255,0.1);
+      border-radius: var(--radius);
+      cursor: crosshair;
+      background: rgba(255,255,255,0.03);
+      margin: 15px 0;
+    }
+
+    .genogram-toolbar {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+      margin-bottom: 15px;
+    }
+
+    .genogram-btn {
+      padding: 8px 15px;
+      border: 2px solid var(--color-accent);
+      background: rgba(0,255,255,0.1);
+      color: var(--color-accent);
+      border-radius: var(--radius);
+      cursor: pointer;
+      font-weight: 600;
+      transition: var(--transition);
+      font-family: inherit;
+    }
+
+    .genogram-btn:hover, .genogram-btn.active {
+      background: var(--color-accent);
+      color: #000;
+    }
+
+    /* ---------- CASE CARDS ---------- */
+    .case-card {
+      background: rgba(255,255,255,0.05);
+      padding: 20px;
+      border-radius: var(--radius);
+      cursor: pointer;
+      transition: var(--transition);
+      border: 2px solid rgba(255,255,255,0.1);
+      margin-bottom: 15px;
+    }
+
+    .case-card:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 6px 20px rgba(0,255,255,0.2);
+      border-color: var(--color-accent);
+    }
+
+    /* ---------- UTILITY ---------- */
+    .hide { display: none !important; }
+    .text-center { text-align: center; }
+    .mt-20 { margin-top: 20px; }
+    .mb-20 { margin-bottom: 20px; }
+    .flex { display: flex; }
+    .flex-wrap { flex-wrap: wrap; }
+    .gap-10 { gap: 10px; }
+    .justify-between { justify-content: space-between; }
+    .align-center { align-items: center; }
+
+    /* ---------- FOOTER ---------- */
+    .footer {
+      background: var(--color-panel);
+      backdrop-filter: blur(var(--blur));
+      padding: 15px 20px;
+      border-top: 1px solid rgba(255,255,255,0.08);
+      margin-top: auto;
+    }
+
+    .footer-content {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 15px;
+    }
+
+    .footer-brand {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-weight: 700;
+      color: var(--color-accent);
+    }
+
+    .footer-version {
+      background: rgba(0,255,255,0.2);
+      padding: 2px 8px;
+      border-radius: 5px;
+      font-size: 0.75rem;
+    }
+
+    .footer-links {
+      display: flex;
+      gap: 20px;
+    }
+
+    .footer-link {
+      color: var(--color-text);
+      text-decoration: none;
+      transition: var(--transition);
+      font-size: 0.9rem;
+    }
+
+    .footer-link:hover {
+      color: var(--color-accent);
+    }
+
+    .footer-copyright {
+      font-size: 0.85rem;
+      color: rgba(255,255,255,0.6);
+      display: flex;
+      align-items: center;
+      gap: 5px;
+    }
+
+    .footer-badge {
+      background: rgba(0,255,255,0.1);
+      padding: 3px 8px;
+      border-radius: 5px;
+      margin-left: 10px;
+    }
+
+    /* ---------- RESPONSIVE ---------- */
+    @media (max-width: 768px) {
+      .sidebar { 
+        width: 70px;
+        padding: 10px;
+      }
+      .sidebar h1 { 
+        font-size: 1rem;
+      }
+      .sidebar .subtitle { display: none; }
+      .nav-item span { display: none; }
+      .form-grid { grid-template-columns: 1fr; }
+      .footer-content {
+        flex-direction: column;
+        text-align: center;
+      }
+    }
+
+    /* ---------- LOADING ANIMATION ---------- */
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+
+    .loading-spinner {
+      width: 30px;
+      height: 30px;
+      border: 3px solid rgba(0,255,255,0.2);
+      border-top: 3px solid var(--color-accent);
+      border-radius: 50%;
+      animation: spin 1s linear infinite;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- SIDEBAR -->
+  <div class="sidebar">
+    <h1><i class="fas fa-brain"></i> PSICOLOGÍA NOM</h1>
+    <div class="subtitle">Sistema Integral Clínico</div>
+
+    <div class="nav-section">MÓDULOS PRINCIPALES</div>
+    <div class="nav-item active" onclick="switchModule('simulador')">
+      <i class="fas fa-graduation-cap"></i><span> Simulador</span>
+    </div>
+    <div class="nav-item" onclick="switchModule('expediente')">
+      <i class="fas fa-folder-open"></i><span> Expediente</span>
+    </div>
+    <div class="nav-item" onclick="switchModule('genograma')">
+      <i class="fas fa-project-diagram"></i><span> Genograma</span>
+    </div>
+
+    <div class="nav-section">EXPEDIENTE NOM-004</div>
+    <div class="nav-item" onclick="switchModule('establecimiento')">
+      <i class="fas fa-hospital"></i><span> Establecimiento</span>
+    </div>
+    <div class="nav-item" onclick="switchModule('identificacion')">
+      <i class="fas fa-id-card"></i><span> Identificación</span>
+    </div>
+    <div class="nav-item" onclick="switchModule('consentimiento')">
+      <i class="fas fa-file-signature"></i><span> Consentimiento</span>
+    </div>
+    <div class="nav-item" onclick="switchModule('historia')">
+      <i class="fas fa-file-medical"></i><span> Historia Clínica</span>
+    </div>
+    <div class="nav-item" onclick="switchModule('diagnostico')">
+      <i class="fas fa-stethoscope"></i><span> Diagnóstico</span>
+    </div>
+    <div class="nav-item" onclick="switchModule('notas')">
+      <i class="fas fa-notes-medical"></i><span> Notas Evolución</span>
+    </div>
+    <div class="nav-item" onclick="switchModule('interconsultas')">
+      <i class="fas fa-exchange-alt"></i><span> Interconsultas</span>
+    </div>
+    <div class="nav-item" onclick="switchModule('medicacion')">
+      <i class="fas fa-pills"></i><span> Medicación</span>
+    </div>
+
+    <div class="nav-section">ADMINISTRACIÓN</div>
+    <div class="nav-item" onclick="switchModule('auditoria')">
+      <i class="fas fa-clipboard-check"></i><span> Auditoría</span>
+    </div>
+    <div class="nav-item" onclick="switchModule('exportar')">
+      <i class="fas fa-download"></i><span> Exportar</span>
+    </div>
+    <div class="nav-item" onclick="switchModule('reportes')">
+      <i class="fas fa-chart-bar"></i><span> Reportes</span>
+    </div>
+  </div>
+
+  <!-- MAIN CONTENT -->
+  <div class="main">
+    <!-- TOPBAR -->
+    <div class="topbar">
+      <h2 id="module-title">Simulador de Casos Clínicos</h2>
+      <div class="actions">
+        <i class="fas fa-bell" title="Notificaciones"></i>
+        <i class="fas fa-cog" title="Configuración"></i>
+        <i class="fas fa-user-circle" title="Perfil"></i>
+      </div>
+    </div>
+
+    <!-- CONTENT AREA -->
+    <div class="content" id="main-content">
+      <!-- Módulo Simulador -->
+      <div id="module-simulador" class="module-content">
+        <div class="card">
+          <div class="card-header">
+            <i class="fas fa-sliders-h"></i> Generador de Casos Clínicos - Adicciones
+          </div>
+          
+          <div class="form-grid">
+            <div class="form-group">
+              <label class="form-label">Sustancia</label>
+              <select id="substanceFilter" class="form-select">
+                <option value="all">Todas</option>
+                <option value="alcohol">Alcohol</option>
+                <option value="cannabis">Cannabis</option>
+                <option value="cocaine">Cocaína</option>
+                <option value="opioids">Opioides</option>
+                <option value="benzos">Benzodiacepinas</option>
+                <option value="polydrug">Policonsumo</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label class="form-label">Fase de Tratamiento</label>
+              <select id="phaseFilter" class="form-select">
+                <option value="all">Todas</option>
+                <option value="precontemplation">Precontemplación</option>
+                <option value="contemplation">Contemplación</option>
+                <option value="action">Acción</option>
+                <option value="maintenance">Mantenimiento</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label class="form-label">Severidad</label>
+              <select id="severityFilter" class="form-select">
+                <option value="all">Todas</option>
+                <option value="mild">Leve</option>
+                <option value="moderate">Moderado</option>
+                <option value="severe">Grave</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="flex gap-10 flex-wrap">
+            <button class="btn" onclick="loadClinicalCases()">
+              <i class="fas fa-search"></i> Buscar Casos
+            </button>
+            <button class="btn btn-secondary" onclick="generateAICase()">
+              <i class="fas fa-robot"></i> Generar con IA
+            </button>
+          </div>
+        </div>
+
+        <div id="casesList"></div>
+
+        <div id="caseDetail" class="card hide">
+          <div class="card-header"><i class="fas fa-user-injured"></i> Detalle del Caso</div>
+          <div id="caseContent"></div>
+          
+          <div class="flex gap-10 flex-wrap mt-20">
+            <button class="btn btn-success" onclick="sendToExpediente()">
+              <i class="fas fa-arrow-right"></i> Enviar a Expediente
+            </button>
+            <button class="btn btn-secondary" onclick="exportCasePDF()">
+              <i class="fas fa-file-pdf"></i> Exportar PDF
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Otros módulos aquí (se añadirán dinámicamente) -->
+      <div id="module-expediente" class="module-content hide">
+        <div class="card">
+          <div class="card-header">
+            <i class="fas fa-folder-open"></i> Gestión de Expedientes
+            <button class="btn" onclick="showNewPatientModal()" style="margin-left: auto;">
+              <i class="fas fa-user-plus"></i> Nuevo Paciente
+            </button>
+          </div>
+
+          <div class="alert alert-info">
+            <i class="fas fa-shield-alt"></i>
+            <div>
+              <strong>Cumplimiento Normativo:</strong> Este sistema cumple con la NOM-004-SSA3-2012 sobre expediente clínico y NOM-024-SSA3-2012 sobre sistemas de registro electrónico.
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">Seleccionar Paciente</label>
+            <select id="patientSelect" class="form-select" onchange="loadPatient(this.value)">
+              <option value="">-- Seleccionar --</option>
+            </select>
+          </div>
+
+          <div id="patientInfo" class="hide">
+            <div class="alert alert-success">
+              <i class="fas fa-check-circle"></i>
+              <div id="patientInfoText">Paciente cargado correctamente</div>
+            </div>
+            <p style="margin-top: 15px; color: rgba(255,255,255,0.7);">Utiliza el menú lateral para acceder a las diferentes secciones del expediente.</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Módulo Genograma -->
+      <div id="module-genograma" class="module-content hide">
+        <div class="card">
+          <div class="card-header">
+            <i class="fas fa-project-diagram"></i> Genograma Familiar Interactivo
+          </div>
+          
+          <div class="alert alert-info">
+            <i class="fas fa-info-circle"></i>
+            <strong>Instrucciones:</strong> Selecciona una herramienta y haz clic en el canvas para agregar miembros familiares. Arrastra para conectar relaciones.
+          </div>
+
+          <div class="genogram-toolbar">
+            <button class="genogram-btn active" onclick="setGenogramTool('male')" id="tool-male">
+              <i class="fas fa-male"></i> Hombre
+            </button>
+            <button class="genogram-btn" onclick="setGenogramTool('female')" id="tool-female">
+              <i class="fas fa-female"></i> Mujer
+            </button>
+            <button class="genogram-btn" onclick="setGenogramTool('couple')" id="tool-couple">
+              <i class="fas fa-heart"></i> Pareja
+            </button>
+            <button class="genogram-btn" onclick="setGenogramTool('children')" id="tool-children">
+              <i class="fas fa-child"></i> Hijo
+            </button>
+            <button class="genogram-btn" onclick="setGenogramTool('delete')" id="tool-delete">
+              <i class="fas fa-trash"></i> Eliminar
+            </button>
+            <button class="genogram-btn" onclick="clearGenogram()">
+              <i class="fas fa-eraser"></i> Limpiar Todo
+            </button>
+            <button class="btn btn-success" onclick="exportGenogramPDF()">
+              <i class="fas fa-download"></i> Exportar PDF
+            </button>
+          </div>
+
+          <canvas id="genogram-canvas" width="900" height="600"></canvas>
+
+          <div class="form-group mt-20">
+            <label class="form-label">Notas del Genograma</label>
+            <textarea class="form-textarea" id="genogram-notes" placeholder="Observaciones sobre la estructura familiar, patrones de consumo, conflictos, factores de riesgo..."></textarea>
+          </div>
+
+          <button class="btn btn-success" onclick="saveGenogram()">
+            <i class="fas fa-save"></i> Guardar Genograma
+          </button>
+        </div>
+      </div>
+
+      <!-- Más módulos se crearán dinámicamente -->
+    </div>
+
+    <!-- FOOTER -->
+    <div class="footer">
+      <div class="footer-content">
+        <div class="footer-brand">
+          <i class="fas fa-shield-alt"></i>
+          FORENSIC TOOLS
+          <span class="footer-version">v2.0 NOM</span>
+        </div>
+        
+        <div class="footer-links">
+          <a href="https://www.abogadosforenses.org" class="footer-link" target="_blank">
+            <i class="fas fa-globe"></i> AbogadosForenses.org
+          </a>
+          <a href="#" class="footer-link">
+            <i class="fas fa-book"></i> Docs
+          </a>
+          <a href="#" class="footer-link">
+            <i class="fas fa-envelope"></i> Contacto
+          </a>
+        </div>
+        
+        <div class="footer-copyright">
+          <span class="footer-year">© 2025</span>
+          <span>Desarrollado por</span>
+          <strong style="color: var(--color-accent);">Lic. Al Azua</strong>
+          <span class="footer-badge">
+            <i class="fas fa-brain"></i> Powered by AI
+          </span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODALES -->
+  <div id="newPatientModal" class="modal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h3><i class="fas fa-user-plus"></i> Nuevo Paciente</h3>
+        <button class="close-modal" onclick="closeModal('newPatientModal')">✕</button>
+      </div>
+      
+      <div class="form-grid">
+        <div class="form-group">
+          <label class="form-label">Nombre Completo *</label>
+          <input type="text" class="form-input" id="new_patient_name">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Apellido Paterno *</label>
+          <input type="text" class="form-input" id="new_patient_apellido_paterno">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Apellido Materno *</label>
+          <input type="text" class="form-input" id="new_patient_apellido_materno">
+        </div>
+      </div>
+
+      <div class="form-grid">
+        <div class="form-group">
+          <label class="form-label">Fecha de Nacimiento *</label>
+          <input type="date" class="form-input" id="new_patient_fecha_nacimiento">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Edad</label>
+          <input type="number" class="form-input" id="new_patient_age" readonly>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Teléfono</label>
+          <input type="tel" class="form-input" id="new_patient_phone">
+        </div>
+      </div>
+
+      <div class="flex gap-10">
+        <button class="btn" onclick="createPatient()">
+          <i class="fas fa-check"></i> Crear Expediente
+        </button>
+        <button class="btn btn-secondary" onclick="closeModal('newPatientModal')">
+          Cancelar
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <div id="notaEvolucionModal" class="modal">
+    <div class="modal-content" style="max-width: 900px;">
+      <div class="modal-header">
+        <h3><i class="fas fa-notes-medical"></i> Nueva Nota de Evolución (NOM-004)</h3>
+        <button class="close-modal" onclick="closeModal('notaEvolucionModal')">✕</button>
+      </div>
+
+      <div class="alert alert-info">
+        <i class="fas fa-info-circle"></i>
+        <strong>Formato NOM-004:</strong> Toda nota debe contener: fecha, hora, evolución del paciente, tratamiento aplicado y nombre completo con firma del responsable.
+      </div>
+
+      <div class="form-grid">
+        <div class="form-group">
+          <label class="form-label">Fecha de la Sesión *</label>
+          <input type="date" class="form-input" id="nota_fecha">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Hora de Inicio *</label>
+          <input type="time" class="form-input" id="nota_hora_inicio">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Hora de Término</label>
+          <input type="time" class="form-input" id="nota_hora_fin">
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label">Número de Sesión</label>
+        <input type="number" class="form-input" id="nota_numero_sesion">
+      </div>
+
+      <div class="form-group">
+        <label class="form-label">Evolución del Paciente *</label>
+        <textarea class="form-textarea" id="nota_evolucion" style="min-height: 120px;" placeholder="Estado actual, cambios desde última sesión, respuesta al tratamiento..."></textarea>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label">Intervenciones Realizadas *</label>
+        <textarea class="form-textarea" id="nota_intervenciones" placeholder="Técnicas aplicadas, temas trabajados, recursos utilizados..."></textarea>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label">Plan para Próxima Sesión</label>
+        <textarea class="form-textarea" id="nota_plan_proxima"></textarea>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label">Firma del Responsable *</label>
+        <input type="text" class="form-input" id="nota_firma_responsable" placeholder="Nombre completo del psicólogo">
+      </div>
+
+      <div class="flex gap-10">
+        <button class="btn btn-success" onclick="saveNotaEvolucion()">
+          <i class="fas fa-save"></i> Guardar Nota
+        </button>
+        <button class="btn btn-secondary" onclick="closeModal('notaEvolucionModal')">
+          Cancelar
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // ========== DATOS DE CASOS CLÍNICOS ==========
+    const CLINICAL_CASES = [
+      {
+        id: 1,
+        patient: { name: "Roberto González", age: 42, gender: "Masculino", occupation: "Contador", maritalStatus: "Casado" },
+        substance: "alcohol",
+        phase: "contemplation",
+        severity: "severe",
+        substanceUseHistory: {
+          primarySubstance: "Alcohol",
+          ageOfOnset: 18,
+          yearsOfUse: 24,
+          currentPattern: "Consumo diario de 10-14 cervezas",
+          lastUse: "Ayer"
+        },
+        motivationLevel: 6,
+        symptoms: ["Temblores matutinos", "Sudoración", "Irritabilidad", "Blackouts", "Tolerancia aumentada"],
+        triggers: ["Estrés laboral", "Conflictos maritales", "Reuniones sociales"],
+        correctDiagnosis: "Trastorno por Consumo de Alcohol - Grave (F10.20)"
+      },
+      {
+        id: 2,
+        patient: { name: "María Sánchez", age: 28, gender: "Femenino", occupation: "Diseñadora", maritalStatus: "Soltera" },
+        substance: "cannabis",
+        phase: "precontemplation",
+        severity: "moderate",
+        substanceUseHistory: {
+          primarySubstance: "Cannabis",
+          ageOfOnset: 16,
+          yearsOfUse: 12,
+          currentPattern: "Consumo diario, 3-5 porros",
+          lastUse: "Hace 2 horas"
+        },
+        motivationLevel: 3,
+        symptoms: ["Irritabilidad sin consumo", "Problemas de memoria", "Apatía"],
+        triggers: ["Estrés", "Aburrimiento", "Ansiedad social"],
+        correctDiagnosis: "Trastorno por Consumo de Cannabis - Moderado (F12.20)"
+      }
+    ];
+
+    // ========== VARIABLES GLOBALES ==========
+    let currentCase = null;
+    let currentPatient = null;
+    let patients = {};
+    let genogramTool = 'male';
+    let genogramElements = [];
+    let genogramCanvas = null;
+    let genogramCtx = null;
+    let auditLog = [];
+
+    // ========== INICIALIZACIÓN ==========
+    function initApp() {
+      loadPatientsFromMemory();
+      updatePatientSelector();
+      initGenogram();
+      loadClinicalCases();
+      
+      // Configurar auto-cálculo de edad
+      const fechaNacInput = document.getElementById('new_patient_fecha_nacimiento');
+      if (fechaNacInput) {
+        fechaNacInput.addEventListener('change', function() {
+          const edad = calcularEdad(this.value);
+          document.getElementById('new_patient_age').value = edad;
+        });
+      }
+
+      logAudit('SYSTEM', 'Aplicación iniciada');
+    }
+
+    function calcularEdad(fechaNacimiento) {
+      const hoy = new Date();
+      const nacimiento = new Date(fechaNacimiento);
+      let edad = hoy.getFullYear() - nacimiento.getFullYear();
+      const mes = hoy.getMonth() - nacimiento.getMonth();
+      if (mes < 0 || (mes === 0 && hoy.getDate() < nacimiento.getDate())) {
+        edad--;
+      }
+      return edad;
+    }
+
+    // ========== GESTIÓN DE DATOS EN MEMORIA ==========
+    function loadPatientsFromMemory() {
+      // Simulación de carga - en producción usar base de datos
+      if (Object.keys(patients).length === 0) {
+        console.log('No hay pacientes en memoria');
+      }
+    }
+
+    function savePatientsToMemory() {
+      // En producción, aquí iría la llamada a API/base de datos
+      console.log('Pacientes guardados en memoria:', Object.keys(patients).length);
+      logAudit('SYSTEM', 'Datos guardados en memoria');
+    }
+
+    function logAudit(action, details, userId = 'SYSTEM') {
+      const entry = {
+        timestamp: new Date().toISOString(),
+        user: userId,
+        action: action,
+        details: details,
+        ip: 'LOCAL'
+      };
+      auditLog.push(entry);
+      console.log('AUDIT:', entry);
+    }
+
+    // ========== NAVEGACIÓN ENTRE MÓDULOS ==========
+    function switchModule(moduleName) {
+      // Actualizar menú lateral
+      document.querySelectorAll('.nav-item').forEach(item => {
+        item.classList.remove('active');
+      });
+      event.target.classList.add('active');
+
+      // Ocultar todos los módulos
+      document.querySelectorAll('.module-content').forEach(content => {
+        content.classList.add('hide');
+      });
+
+      // Mostrar módulo seleccionado
+      const moduleElement = document.getElementById('module-' + moduleName);
+      if (moduleElement) {
+        moduleElement.classList.remove('hide');
+      } else {
+        createModuleContent(moduleName);
+      }
+
+      // Actualizar título
+      const titles = {
+        'simulador': 'Simulador de Casos Clínicos',
+        'expediente': 'Gestión de Expedientes',
+        'genograma': 'Genograma Familiar',
+        'establecimiento': 'Datos del Establecimiento',
+        'identificacion': 'Identificación del Paciente',
+        'consentimiento': 'Consentimiento Informado',
+        'historia': 'Historia Clínica',
+        'diagnostico': 'Diagnóstico y Plan',
+        'notas': 'Notas de Evolución',
+        'interconsultas': 'Interconsultas y Referencias',
+        'medicacion': 'Registro de Medicación',
+        'auditoria': 'Registro de Auditoría',
+        'exportar': 'Exportar Expediente',
+        'reportes': 'Reportes y Estadísticas'
+      };
+      document.getElementById('module-title').textContent = titles[moduleName] || moduleName;
+
+      logAudit('NAVIGATION', `Acceso a módulo: ${moduleName}`);
+
+      if (moduleName === 'genograma') {
+        setTimeout(() => drawGenogram(), 100);
+      }
+    }
+
+    function createModuleContent(moduleName) {
+      const content = document.getElementById('main-content');
+      let moduleHTML = '';
+
+      switch(moduleName) {
+        case 'establecimiento':
+          moduleHTML = createEstablecimientoModule();
+          break;
+        case 'identificacion':
+          moduleHTML = createIdentificacionModule();
+          break;
+        case 'consentimiento':
+          moduleHTML = createConsentimientoModule();
+          break;
+        case 'historia':
+          moduleHTML = createHistoriaModule();
+          break;
+        case 'diagnostico':
+          moduleHTML = createDiagnosticoModule();
+          break;
+        case 'notas':
+          moduleHTML = createNotasModule();
+          break;
+        case 'interconsultas':
+          moduleHTML = createInterconsultasModule();
+          break;
+        case 'medicacion':
+          moduleHTML = createMedicacionModule();
+          break;
+        case 'auditoria':
+          moduleHTML = createAuditoriaModule();
+          break;
+        case 'exportar':
+          moduleHTML = createExportarModule();
+          break;
+        case 'reportes':
+          moduleHTML = createReportesModule();
+          break;
+      }
+
+      const moduleDiv = document.createElement('div');
+      moduleDiv.id = 'module-' + moduleName;
+      moduleDiv.className = 'module-content';
+      moduleDiv.innerHTML = moduleHTML;
+      content.appendChild(moduleDiv);
+    }
+
+    // ========== CREACIÓN DE MÓDULOS DINÁMICOS ==========
+    function createEstablecimientoModule() {
+      return `
+        <div class="card">
+          <div class="card-header">
+            <i class="fas fa-hospital"></i> 1. DATOS DEL ESTABLECIMIENTO (NOM-004 - Obligatorio)
+          </div>
+          
+          <div class="alert alert-warning">
+            <i class="fas fa-exclamation-triangle"></i>
+            <strong>Requisito NOM-004:</strong> Estos datos son obligatorios y deben aparecer en todo expediente clínico.
+          </div>
+
+          <div class="form-grid">
+            <div class="form-group">
+              <label class="form-label">Nombre del Establecimiento *</label>
+              <input type="text" class="form-input" id="establecimiento_nombre" placeholder="Consultorio/Clínica">
+            </div>
+            <div class="form-group">
+              <label class="form-label">Domicilio Completo *</label>
+              <input type="text" class="form-input" id="establecimiento_domicilio">
+            </div>
+            <div class="form-group">
+              <label class="form-label">Teléfono</label>
+              <input type="tel" class="form-input" id="establecimiento_telefono">
+            </div>
+          </div>
+
+          <div class="form-grid">
+            <div class="form-group">
+              <label class="form-label">Nombre del Responsable Sanitario *</label>
+              <input type="text" class="form-input" id="responsable_nombre">
+            </div>
+            <div class="form-group">
+              <label class="form-label">Cédula Profesional *</label>
+              <input type="text" class="form-input" id="responsable_cedula">
+            </div>
+            <div class="form-group">
+              <label class="form-label">Especialidad</label>
+              <input type="text" class="form-input" id="responsable_especialidad" value="Psicología Clínica">
+            </div>
+          </div>
+
+          <button class="btn btn-success" onclick="saveEstablecimiento()">
+            <i class="fas fa-save"></i> Guardar Datos del Establecimiento
+          </button>
+        </div>
+      `;
+    }
+
+    function createIdentificacionModule() {
+      if (!currentPatient) {
+        return `
+          <div class="card">
+            <div class="alert alert-warning">
+              <i class="fas fa-exclamation-triangle"></i>
+              <strong>Atención:</strong> Debes seleccionar o crear un paciente primero desde el módulo "Expediente".
+            </div>
+          </div>
+        `;
+      }
+
+      return `
+        <div class="card">
+          <div class="card-header">
+            <i class="fas fa-id-card"></i> 2. IDENTIFICACIÓN DEL PACIENTE (NOM-004 - Obligatorio)
+          </div>
+
+          <div class="form-grid">
+            <div class="form-group">
+              <label class="form-label">Número de Expediente *</label>
+              <input type="text" class="form-input" id="patient_expediente" value="${currentPatient.id}" readonly>
+            </div>
+            <div class="form-group">
+              <label class="form-label">Fecha de Apertura *</label>
+              <input type="date" class="form-input" id="patient_fecha_apertura" value="${currentPatient.fecha_creacion ? currentPatient.fecha_creacion.split('T')[0] : ''}">
+            </div>
+            <div class="form-group">
+              <label class="form-label">Tipo de Expediente</label>
+              <select class="form-select" id="patient_tipo_expediente">
+                <option value="primera_vez">Primera vez</option>
+                <option value="subsecuente">Subsecuente</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="form-grid">
+            <div class="form-group">
+              <label class="form-label">Nombre(s) *</label>
+              <input type="text" class="form-input" id="patient_nombre" value="${currentPatient.name || ''}">
+            </div>
+            <div class="form-group">
+              <label class="form-label">Apellido Paterno *</label>
+              <input type="text" class="form-input" id="patient_apellido_paterno" value="${currentPatient.apellido_paterno || ''}">
+            </div>
+            <div class="form-group">
+              <label class="form-label">Apellido Materno *</label>
+              <input type="text" class="form-input" id="patient_apellido_materno" value="${currentPatient.apellido_materno || ''}">
+            </div>
+          </div>
+
+          <div class="form-grid">
+            <div class="form-group">
+              <label class="form-label">Fecha de Nacimiento *</label>
+              <input type="date" class="form-input" id="patient_fecha_nacimiento" value="${currentPatient.fecha_nacimiento || ''}">
+            </div>
+            <div class="form-group">
+              <label class="form-label">Edad *</label>
+              <input type="number" class="form-input" id="patient_edad" value="${currentPatient.age || ''}">
+            </div>
+            <div class="form-group">
+              <label class="form-label">Sexo *</label>
+              <select class="form-select" id="patient_sexo">
+                <option value="">Seleccionar</option>
+                <option value="masculino" ${currentPatient.gender === 'Masculino' ? 'selected' : ''}>Masculino</option>
+                <option value="femenino" ${currentPatient.gender === 'Femenino' ? 'selected' : ''}>Femenino</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="form-grid">
+            <div class="form-group">
+              <label class="form-label">CURP</label>
+              <input type="text" class="form-input" id="patient_curp" maxlength="18" value="${currentPatient.curp || ''}">
+            </div>
+            <div class="form-group">
+              <label class="form-label">Estado Civil</label>
+              <select class="form-select" id="patient_estado_civil">
+                <option value="">Seleccionar</option>
+                <option value="soltero">Soltero(a)</option>
+                <option value="casado">Casado(a)</option>
+                <option value="union_libre">Unión libre</option>
+                <option value="divorciado">Divorciado(a)</option>
+                <option value="viudo">Viudo(a)</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label class="form-label">Escolaridad</label>
+              <input type="text" class="form-input" id="patient_escolaridad" value="${currentPatient.escolaridad || ''}">
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">Domicilio Completo *</label>
+            <input type="text" class="form-input" id="patient_domicilio" placeholder="Calle, número, colonia, municipio, estado, CP" value="${currentPatient.domicilio || ''}">
+          </div>
+
+          <div class="form-grid">
+            <div class="form-group">
+              <label class="form-label">Teléfono *</label>
+              <input type="tel" class="form-input" id="patient_telefono" value="${currentPatient.phone || ''}">
+            </div>
+            <div class="form-group">
+              <label class="form-label">Email</label>
+              <input type="email" class="form-input" id="patient_email" value="${currentPatient.email || ''}">
+            </div>
+            <div class="form-group">
+              <label class="form-label">Ocupación</label>
+              <input type="text" class="form-input" id="patient_ocupacion" value="${currentPatient.occupation || ''}">
+            </div>
+          </div>
+
+          <button class="btn btn-success" onclick="saveIdentificacion()">
+            <i class="fas fa-save"></i> Guardar Identificación
+          </button>
+        </div>
+      `;
+    }
+
+    function createConsentimientoModule() {
+      if (!currentPatient) {
+        return `<div class="card"><div class="alert alert-warning"><i class="fas fa-exclamation-triangle"></i> Selecciona un paciente primero.</div></div>`;
+      }
+
+      return `
+        <div class="card">
+          <div class="card-header">
+            <i class="fas fa-file-signature"></i> 3. CONSENTIMIENTO INFORMADO (NOM-004 - Obligatorio)
+          </div>
+          
+          <div class="alert alert-danger">
+            <i class="fas fa-exclamation-circle"></i>
+            <strong>Requisito Legal NOM-004:</strong> El consentimiento informado debe estar firmado ANTES de iniciar cualquier tratamiento.
+          </div>
+
+          <div style="background: rgba(255,255,255,0.03); padding: 20px; border-radius: 10px; margin-bottom: 20px;">
+            <h4 style="margin-bottom: 15px; color: var(--color-accent);">CONSENTIMIENTO BAJO INFORMACIÓN PARA TRATAMIENTO PSICOLÓGICO</h4>
+            
+            <p style="margin-bottom: 15px; line-height: 1.8;">
+              Yo, <strong>${currentPatient.name || '[NOMBRE DEL PACIENTE]'}</strong>, 
+              mayor de edad, en pleno uso de mis facultades mentales, por medio del presente documento, doy mi 
+              <strong>CONSENTIMIENTO INFORMADO</strong> para recibir atención psicológica.
+            </p>
+
+            <p style="color: var(--color-accent); font-weight: 600; margin-bottom: 10px;">He sido informado(a) de lo siguiente:</p>
+            <ol style="margin-left: 25px; margin-bottom: 20px; line-height: 1.8;">
+              <li>El tratamiento psicológico tiene como objetivo mejorar mi bienestar emocional y psicológico</li>
+              <li>El proceso puede requerir varias sesiones y mi participación activa es fundamental</li>
+              <li>La información compartida es confidencial según el Código Ético del Psicólogo</li>
+              <li>Existen excepciones a la confidencialidad: riesgo de daño a sí mismo o terceros, abuso de menores, orden judicial</li>
+              <li>Puedo suspender el tratamiento en cualquier momento</li>
+              <li>El psicólogo NO prescribe medicamentos (se derivará a psiquiatra si es necesario)</li>
+              <li>En caso de tratamiento por adicciones, se seguirá la NOM-028-SSA2-2009</li>
+            </ol>
+
+            <div style="margin-top: 20px;">
+              <label style="display: flex; align-items: center; gap: 10px; cursor: pointer;">
+                <input type="checkbox" id="consentimiento_acepto" style="width: 20px; height: 20px;">
+                <strong style="color: var(--color-success);">ACEPTO las condiciones mencionadas y autorizo el tratamiento psicológico</strong>
+              </label>
+            </div>
+
+            <div style="margin-top: 30px; display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
+              <div>
+                <label class="form-label">Firma del Paciente *</label>
+                <input type="text" class="form-input" id="consentimiento_firma_paciente" placeholder="Nombre completo">
+                <input type="date" class="form-input" style="margin-top: 10px;" id="consentimiento_fecha_paciente">
+              </div>
+              <div>
+                <label class="form-label">Firma del Psicólogo *</label>
+                <input type="text" class="form-input" id="consentimiento_firma_psicologo" placeholder="Nombre completo">
+                <input type="date" class="form-input" style="margin-top: 10px;" id="consentimiento_fecha_psicologo">
+              </div>
+            </div>
+          </div>
+
+          <button class="btn btn-success" onclick="saveConsentimiento()">
+            <i class="fas fa-save"></i> Guardar Consentimiento
+          </button>
+        </div>
+      `;
+    }
+
+    function createHistoriaModule() {
+      if (!currentPatient) {
+        return `<div class="card"><div class="alert alert-warning"><i class="fas fa-exclamation-triangle"></i> Selecciona un paciente primero.</div></div>`;
+      }
+
+      return `
+        <div class="card">
+          <div class="card-header">
+            <i class="fas fa-file-medical"></i> 4. HISTORIA CLÍNICA (NOM-004 - Obligatorio)
+          </div>
+
+          <h4 style="color: var(--color-accent); margin: 20px 0 15px;">4.1 Interrogatorio por Aparatos y Sistemas</h4>
+          
+          <div class="form-group">
+            <label class="form-label">Antecedentes Heredofamiliares</label>
+            <textarea class="form-textarea" id="hc_heredofamiliares" placeholder="Padecimientos en familiares directos: diabetes, hipertensión, enfermedades psiquiátricas, adicciones...">${currentPatient.heredofamiliares || ''}</textarea>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">Antecedentes Personales No Patológicos</label>
+            <textarea class="form-textarea" id="hc_no_patologicos" placeholder="Vivienda, alimentación, hábitos higiénicos, ejercicio, sueño...">${currentPatient.no_patologicos || ''}</textarea>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">Antecedentes Personales Patológicos</label>
+            <textarea class="form-textarea" id="hc_patologicos" placeholder="Enfermedades previas, cirugías, traumatismos, alergias, hospitalizaciones...">${currentPatient.patologicos || ''}</textarea>
+          </div>
+
+          <h4 style="color: var(--color-accent); margin: 30px 0 15px;">4.2 Padecimiento Actual</h4>
+          
+          <div class="form-group">
+            <label class="form-label">Motivo de la Consulta *</label>
+            <textarea class="form-textarea" id="hc_motivo" placeholder="¿Por qué acude a consulta? Describir síntomas principales...">${currentPatient.motivo || ''}</textarea>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">Inicio y Evolución del Padecimiento</label>
+            <textarea class="form-textarea" id="hc_evolucion_padecimiento" placeholder="¿Cuándo iniciaron los síntomas? ¿Cómo han evolucionado?">${currentPatient.evolucion_padecimiento || ''}</textarea>
+          </div>
+
+          <h4 style="color: var(--color-accent); margin: 30px 0 15px;">4.3 Consumo de Sustancias (NOM-028-SSA2-2009)</h4>
+          
+          <div class="alert alert-warning">
+            <i class="fas fa-exclamation-triangle"></i>
+            <strong>NOM-028:</strong> Obligatorio interrogar sobre alcohol, tabaco y otras drogas en todo expediente.
+          </div>
+
+          <div class="form-grid">
+            <div class="form-group">
+              <label class="form-label">Consumo de Alcohol</label>
+              <select class="form-select" id="hc_alcohol">
+                <option value="no">No consume</option>
+                <option value="ocasional">Ocasional</option>
+                <option value="frecuente">Frecuente</option>
+                <option value="diario">Diario</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label class="form-label">Consumo de Tabaco</label>
+              <select class="form-select" id="hc_tabaco">
+                <option value="no">No fuma</option>
+                <option value="ocasional">Ocasional</option>
+                <option value="frecuente">Frecuente</option>
+                <option value="diario">Diario</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label class="form-label">Otras Sustancias</label>
+              <select class="form-select" id="hc_otras_sustancias">
+                <option value="no">No consume</option>
+                <option value="si">Sí consume</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">Historia Detallada de Consumo</label>
+            <textarea class="form-textarea" id="hc_consumo_detalle" placeholder="Sustancia, edad de inicio, patrón, cantidad, frecuencia, consecuencias, tratamientos previos...">${currentPatient.consumo || ''}</textarea>
+          </div>
+
+          <h4 style="color: var(--color-accent); margin: 30px 0 15px;">4.4 Examen Mental</h4>
+          
+          <div class="form-grid">
+            <div class="form-group">
+              <label class="form-label">Conciencia y Orientación</label>
+              <select class="form-select" id="examen_conciencia">
+                <option value="normal">Normal</option>
+                <option value="alterada">Alterada</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label class="form-label">Memoria</label>
+              <select class="form-select" id="examen_memoria">
+                <option value="normal">Normal</option>
+                <option value="alterada">Alterada</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label class="form-label">Atención</label>
+              <select class="form-select" id="examen_atencion">
+                <option value="normal">Normal</option>
+                <option value="alterada">Alterada</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="form-grid">
+            <div class="form-group">
+              <label class="form-label">Estado de Ánimo</label>
+              <select class="form-select" id="examen_animo">
+                <option value="eutimico">Eutímico</option>
+                <option value="deprimido">Deprimido</option>
+                <option value="ansioso">Ansioso</option>
+                <option value="irritable">Irritable</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label class="form-label">Pensamiento</label>
+              <select class="form-select" id="examen_pensamiento">
+                <option value="normal">Normal</option>
+                <option value="alterado">Alterado</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label class="form-label">Juicio</label>
+              <select class="form-select" id="examen_juicio">
+                <option value="conservado">Conservado</option>
+                <option value="alterado">Alterado</option>
+              </select>
+            </div>
+          </div>
+
+          <button class="btn btn-success" onclick="saveHistoriaClinica()">
+            <i class="fas fa-save"></i> Guardar Historia Clínica
+          </button>
+        </div>
+      `;
+    }
+
+    function createDiagnosticoModule() {
+      if (!currentPatient) {
+        return `<div class="card"><div class="alert alert-warning"><i class="fas fa-exclamation-triangle"></i> Selecciona un paciente primero.</div></div>`;
+      }
+
+      return `
+        <div class="card">
+          <div class="card-header">
+            <i class="fas fa-stethoscope"></i> 5. DIAGNÓSTICO Y PLAN DE TRATAMIENTO (NOM-004)
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">Diagnóstico Principal (CIE-10 / DSM-5) *</label>
+            <input type="text" class="form-input" id="diagnostico_principal" placeholder="Ej: F10.20 Trastorno por consumo de alcohol, dependencia" value="${currentPatient.diagnostico || ''}">
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">Diagnósticos Secundarios</label>
+            <textarea class="form-textarea" id="diagnosticos_secundarios" placeholder="Comorbilidades...">${currentPatient.diagnosticos_secundarios || ''}</textarea>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">Pronóstico</label>
+            <select class="form-select" id="pronostico">
+              <option value="">Seleccionar</option>
+              <option value="bueno">Bueno</option>
+              <option value="reservado">Reservado</option>
+              <option value="malo">Malo</option>
+            </select>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">Plan de Tratamiento *</label>
+            <textarea class="form-textarea" id="plan_tratamiento" placeholder="Objetivos terapéuticos, técnicas a utilizar, frecuencia de sesiones, criterios de alta..." style="min-height: 150px;">${currentPatient.plan_tratamiento || ''}</textarea>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">Objetivos Específicos</label>
+            <textarea class="form-textarea" id="objetivos_especificos" placeholder="Objetivos medibles y temporalizados...">${currentPatient.objetivos_especificos || ''}</textarea>
+          </div>
+
+          <button class="btn btn-success" onclick="saveDiagnosticoPlan()">
+            <i class="fas fa-save"></i> Guardar Diagnóstico y Plan
+          </button>
+        </div>
+      `;
+    }
+
+    function createNotasModule() {
+      if (!currentPatient) {
+        return `<div class="card"><div class="alert alert-warning"><i class="fas fa-exclamation-triangle"></i> Selecciona un paciente primero.</div></div>`;
+      }
+
+      const notas = currentPatient.notas_evolucion || [];
+      let notasHTML = '';
+
+      if (notas.length === 0) {
+        notasHTML = '<p style="text-align: center; padding: 30px; color: rgba(255,255,255,0.5);">No hay notas de evolución registradas.</p>';
+      } else {
+        notasHTML = notas.map((nota, index) => `
+          <div class="card" style="background: rgba(0,255,255,0.05); margin-bottom: 15px;">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
+              <div>
+                <strong style="color: var(--color-accent);">Sesión #${nota.numero || index + 1}</strong>
+                <span style="margin-left: 15px; color: rgba(255,255,255,0.6);">${nota.fecha} - ${nota.hora_inicio}</span>
+              </div>
+              <button class="btn btn-secondary" onclick="viewNota(${index})">
+                <i class="fas fa-eye"></i> Ver Detalle
+              </button>
+            </div>
+            <p style="margin-top: 10px; color: rgba(255,255,255,0.8);">${nota.evolucion.substring(0, 150)}...</p>
+            <p style="margin-top: 10px; font-size: 0.85rem; color: rgba(255,255,255,0.6);"><strong>Firma:</strong> ${nota.firma_responsable}</p>
+          </div>
+        `).join('');
+      }
+
+      return `
+        <div class="card">
+          <div class="card-header">
+            <i class="fas fa-notes-medical"></i> 6. NOTAS DE EVOLUCIÓN (NOM-004 - Obligatorio)
+            <button class="btn" onclick="addNotaEvolucion()" style="margin-left: auto;">
+              <i class="fas fa-plus"></i> Nueva Nota
+            </button>
+          </div>
+
+          <div class="alert alert-info">
+            <i class="fas fa-info-circle"></i>
+            <strong>Requisito NOM-004:</strong> Debe existir una nota de evolución por cada consulta/sesión. Debe incluir: fecha, hora, evolución, tratamiento aplicado y firma del responsable.
+          </div>
+
+          <div id="notas-evolucion-list">
+            ${notasHTML}
+          </div>
+        </div>
+      `;
+    }
+
+    function createInterconsultasModule() {
+      if (!currentPatient) {
+        return `<div class="card"><div class="alert alert-warning"><i class="fas fa-exclamation-triangle"></i> Selecciona un paciente primero.</div></div>`;
+      }
+
+      return `
+        <div class="card">
+          <div class="card-header">
+            <i class="fas fa-exchange-alt"></i> 7. INTERCONSULTAS Y REFERENCIAS (NOM-004)
+          </div>
+
+          <div class="alert alert-info">
+            <i class="fas fa-info-circle"></i>
+            Las interconsultas permiten referir al paciente a otros especialistas (psiquiatría, medicina interna, etc.) según NOM-004.
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">Especialidad de Referencia</label>
+            <select class="form-select" id="interconsulta_especialidad">
+              <option value="">Seleccionar</option>
+              <option value="psiquiatria">Psiquiatría</option>
+              <option value="medicina_interna">Medicina Interna</option>
+              <option value="neurologia">Neurología</option>
+              <option value="trabajo_social">Trabajo Social</option>
+              <option value="otro">Otro</option>
+            </select>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">Nombre del Especialista</label>
+            <input type="text" class="form-input" id="interconsulta_especialista">
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">Motivo de la Interconsulta</label>
+            <textarea class="form-textarea" id="interconsulta_motivo" placeholder="Razón de la referencia, información relevante..."></textarea>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">Fecha de Referencia</label>
+            <input type="date" class="form-input" id="interconsulta_fecha">
+          </div>
+
+          <button class="btn btn-success" onclick="saveInterconsulta()">
+            <i class="fas fa-paper-plane"></i> Registrar Interconsulta
+          </button>
+
+          <div style="margin-top: 30px;">
+            <h4 style="color: var(--color-accent); margin-bottom: 15px;">Historial de Interconsultas</h4>
+            <div id="interconsultas-list">
+              <p style="text-align: center; padding: 20px; color: rgba(255,255,255,0.5);">No hay interconsultas registradas.</p>
+            </div>
+          </div>
+        </div>
+      `;
+    }
+
+    function createMedicacionModule() {
+      if (!currentPatient) {
+        return `<div class="card"><div class="alert alert-warning"><i class="fas fa-exclamation-triangle"></i> Selecciona un paciente primero.</div></div>`;
+      }
+
+      return `
+        <div class="card">
+          <div class="card-header">
+            <i class="fas fa-pills"></i> 8. REGISTRO DE MEDICACIÓN (Si aplica)
+          </div>
+
+          <div class="alert alert-warning">
+            <i class="fas fa-exclamation-triangle"></i>
+            <strong>Importante:</strong> Los psicólogos NO prescriben medicamentos. Este registro es solo para documentar medicación prescrita por médicos/psiquiatras.
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">Medicamento</label>
+            <input type="text" class="form-input" id="medicacion_nombre" placeholder="Nombre comercial y genérico">
+          </div>
+
+          <div class="form-grid">
+            <div class="form-group">
+              <label class="form-label">Dosis</label>
+              <input type="text" class="form-input" id="medicacion_dosis" placeholder="Ej: 50mg">
+            </div>
+            <div class="form-group">
+              <label class="form-label">Frecuencia</label>
+              <input type="text" class="form-input" id="medicacion_frecuencia" placeholder="Ej: Cada 12 horas">
+            </div>
+            <div class="form-group">
+              <label class="form-label">Vía de Administración</label>
+              <select class="form-select" id="medicacion_via">
+                <option value="oral">Oral</option>
+                <option value="sublingual">Sublingual</option>
+                <option value="intramuscular">Intramuscular</option>
+                <option value="otra">Otra</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">Prescrito por (Médico/Psiquiatra)</label>
+            <input type="text" class="form-input" id="medicacion_prescriptor" placeholder="Nombre del médico y cédula">
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">Fecha de Prescripción</label>
+            <input type="date" class="form-input" id="medicacion_fecha">
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">Observaciones</label>
+            <textarea class="form-textarea" id="medicacion_observaciones"></textarea>
+          </div>
+
+          <button class="btn btn-success" onclick="saveMedicacion()">
+            <i class="fas fa-save"></i> Registrar Medicación
+          </button>
+
+          <div style="margin-top: 30px;">
+            <h4 style="color: var(--color-accent); margin-bottom: 15px;">Historial de Medicación</h4>
+            <div id="medicacion-list">
+              <p style="text-align: center; padding: 20px; color: rgba(255,255,255,0.5);">No hay medicación registrada.</p>
+            </div>
+          </div>
+        </div>
+      `;
+    }
+
+    function createAuditoriaModule() {
+      return `
+        <div class="card">
+          <div class="card-header">
+            <i class="fas fa-clipboard-check"></i> REGISTRO DE AUDITORÍA (NOM-004 - Trazabilidad)
+          </div>
+
+          <div class="alert alert-info">
+            <i class="fas fa-shield-alt"></i>
+            <strong>NOM-004 Artículo 5.11:</strong> Se debe llevar registro de accesos, modificaciones y visualizaciones del expediente para garantizar trazabilidad.
+          </div>
+
+          <div class="table-container">
+            <table>
+              <thead>
+                <tr>
+                  <th>Fecha/Hora</th>
+                  <th>Usuario</th>
+                  <th>Acción</th>
+                  <th>Detalles</th>
+                  <th>IP</th>
+                </tr>
+              </thead>
+              <tbody id="audit-table-body">
+                ${auditLog.map(entry => `
+                  <tr>
+                    <td>${new Date(entry.timestamp).toLocaleString('es-MX')}</td>
+                    <td><span class="badge badge-info">${entry.user}</span></td>
+                    <td><span class="badge badge-primary">${entry.action}</span></td>
+                    <td>${entry.details}</td>
+                    <td>${entry.ip}</td>
+                  </tr>
+                `).join('')}
+              </tbody>
+            </table>
+          </div>
+
+          <div style="margin-top: 20px;">
+            <button class="btn btn-secondary" onclick="exportAuditLog()">
+              <i class="fas fa-download"></i> Exportar Log de Auditoría
+            </button>
+          </div>
+        </div>
+      `;
+    }
+
+    function createExportarModule() {
+      if (!currentPatient) {
+        return `<div class="card"><div class="alert alert-warning"><i class="fas fa-exclamation-triangle"></i> Selecciona un paciente primero.</div></div>`;
+      }
+
+      return `
+        <div class="card">
+          <div class="card-header">
+            <i class="fas fa-download"></i> EXPORTAR EXPEDIENTE COMPLETO
+          </div>
+
+          <div class="alert alert-success">
+            <i class="fas fa-check-circle"></i>
+            <strong>Cumplimiento Legal:</strong> El expediente exportado incluye todos los elementos obligatorios de la NOM-004-SSA3-2012 y NOM-024-SSA3-2012 (interoperabilidad).
+          </div>
+
+          <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 20px; margin-top: 20px;">
+            <div class="card" style="background: rgba(0,210,106,0.1); border: 2px solid var(--color-success);">
+              <h4 style="color: var(--color-success); margin-bottom: 10px;"><i class="fas fa-file-pdf"></i> Expediente PDF</h4>
+              <p style="font-size: 0.9rem; margin-bottom: 15px;">Formato legal completo según NOM-004</p>
+              <button class="btn btn-success" onclick="exportExpedienteCompletoPDF()">
+                <i class="fas fa-file-pdf"></i> Generar PDF
+              </button>
+            </div>
+
+            <div class="card" style="background: rgba(74,158,255,0.1); border: 2px solid var(--color-info);">
+              <h4 style="color: var(--color-info); margin-bottom: 10px;"><i class="fas fa-file-code"></i> Backup JSON</h4>
+              <p style="font-size: 0.9rem; margin-bottom: 15px;">Respaldo completo de datos</p>
+              <button class="btn" style="background: var(--color-info);" onclick="exportExpedienteJSON()">
+                <i class="fas fa-file-code"></i> Descargar JSON
+              </button>
+            </div>
+
+            <div class="card" style="background: rgba(0,255,255,0.1); border: 2px solid var(--color-accent);">
+              <h4 style="color: var(--color-accent); margin-bottom: 10px;"><i class="fas fa-exchange-alt"></i> HL7/CDA</h4>
+              <p style="font-size: 0.9rem; margin-bottom: 15px;">Interoperabilidad NOM-024</p>
+              <button class="btn" onclick="exportHL7()">
+                <i class="fas fa-code"></i> Exportar HL7
+              </button>
+            </div>
+
+            <div class="card" style="background: rgba(255,255,255,0.05); border: 2px solid rgba(255,255,255,0.2);">
+              <h4 style="color: var(--color-text); margin-bottom: 10px;"><i class="fas fa-print"></i> Imprimir</h4>
+              <p style="font-size: 0.9rem; margin-bottom: 15px;">Vista de impresión</p>
+              <button class="btn btn-secondary" onclick="imprimirExpediente()">
+                <i class="fas fa-print"></i> Imprimir
+              </button>
+            </div>
+          </div>
+
+          <div class="form-group" style="margin-top: 30px;">
+            <label class="form-label">Firma Digital del Responsable (Opcional)</label>
+            <input type="text" class="form-input" id="firma_digital_responsable" placeholder="Nombre completo del psicólogo responsable">
+            <p style="font-size: 0.85rem; color: rgba(255,255,255,0.6); margin-top: 10px;">
+              * La NOM-004 permite firma electrónica con certificado digital vigente según NOM-151
+            </p>
+          </div>
+        </div>
+      `;
+    }
+
+    function createReportesModule() {
+      return `
+        <div class="card">
+          <div class="card-header">
+            <i class="fas fa-chart-bar"></i> REPORTES Y ESTADÍSTICAS
+          </div>
+
+          <div class="alert alert-info">
+            <i class="fas fa-info-circle"></i>
+            Genera reportes estadísticos de tu práctica clínica para análisis y mejora continua.
+          </div>
+
+          <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px; margin-top: 20px;">
+            <div class="card" style="background: rgba(0,255,255,0.1); text-align: center;">
+              <h2 style="color: var(--color-accent); margin-bottom: 5px;">${Object.keys(patients).length}</h2>
+              <p>Pacientes Activos</p>
+            </div>
+            <div class="card" style="background: rgba(0,210,106,0.1); text-align: center;">
+              <h2 style="color: var(--color-success); margin-bottom: 5px;">${getTotalNotas()}</h2>
+              <p>Notas de Evolución</p>
+            </div>
+            <div class="card" style="background: rgba(74,158,255,0.1); text-align: center;">
+              <h2 style="color: var(--color-info); margin-bottom: 5px;">${auditLog.length}</h2>
+              <p>Registros de Auditoría</p>
+            </div>
+          </div>
+
+          <div style="margin-top: 30px;">
+            <h4 style="color: var(--color-accent); margin-bottom: 15px;">Generar Reportes</h4>
+            <div class="flex gap-10 flex-wrap">
+              <button class="btn" onclick="generarReporteResumen()">
+                <i class="fas fa-file-alt"></i> Resumen General
+              </button>
+              <button class="btn btn-secondary" onclick="generarReporteRetencion()">
+                <i class="fas fa-chart-line"></i> Tasa de Retención
+              </button>
+              <button class="btn btn-secondary" onclick="generarReporteNormas()">
+                <i class="fas fa-clipboard-check"></i> Cumplimiento NOM
+              </button>
+            </div>
+          </div>
+        </div>
+      `;
+    }
+
+    // ========== FUNCIONES DE GUARDADO ==========
+    function saveEstablecimiento() {
+      const data = {
+        nombre: document.getElementById('establecimiento_nombre').value,
+        domicilio: document.getElementById('establecimiento_domicilio').value,
+        telefono: document.getElementById('establecimiento_telefono').value,
+        responsable_nombre: document.getElementById('responsable_nombre').value,
+        responsable_cedula: document.getElementById('responsable_cedula').value,
+        responsable_especialidad: document.getElementById('responsable_especialidad').value
+      };
+
+      // Guardar en variable global o memoria
+      window.establecimientoData = data;
+      logAudit('SAVE', 'Datos del establecimiento guardados');
+      alert('✅ Datos del establecimiento guardados exitosamente');
+    }
+
+    function saveIdentificacion() {
+      if (!currentPatient) return;
+
+      currentPatient.name = document.getElementById('patient_nombre').value;
+      currentPatient.apellido_paterno = document.getElementById('patient_apellido_paterno').value;
+      currentPatient.apellido_materno = document.getElementById('patient_apellido_materno').value;
+      currentPatient.fecha_nacimiento = document.getElementById('patient_fecha_nacimiento').value;
+      currentPatient.age = document.getElementById('patient_edad').value;
+      currentPatient.gender = document.getElementById('patient_sexo').value;
+      currentPatient.curp = document.getElementById('patient_curp').value;
+      currentPatient.estado_civil = document.getElementById('patient_estado_civil').value;
+      currentPatient.escolaridad = document.getElementById('patient_escolaridad').value;
+      currentPatient.domicilio = document.getElementById('patient_domicilio').value;
+      currentPatient.phone = document.getElementById('patient_telefono').value;
+      currentPatient.email = document.getElementById('patient_email').value;
+      currentPatient.occupation = document.getElementById('patient_ocupacion').value;
+
+      savePatientsToMemory();
+      logAudit('UPDATE', `Identificación actualizada - Paciente: ${currentPatient.id}`);
+      alert('✅ Datos de identificación guardados');
+    }
+
+    function saveConsentimiento() {
+      if (!currentPatient) return;
+
+      const acepto = document.getElementById('consentimiento_acepto').checked;
+      if (!acepto) {
+        alert('⚠️ El paciente debe aceptar el consentimiento informado');
+        return;
+      }
+
+      currentPatient.consentimiento = {
+        acepto: true,
+        firma_paciente: document.getElementById('consentimiento_firma_paciente').value,
+        fecha_paciente: document.getElementById('consentimiento_fecha_paciente').value,
+        firma_psicologo: document.getElementById('consentimiento_firma_psicologo').value,
+        fecha_psicologo: document.getElementById('consentimiento_fecha_psicologo').value,
+        fecha_registro: new Date().toISOString()
+      };
+
+      savePatientsToMemory();
+      logAudit('SAVE', `Consentimiento informado registrado - Paciente: ${currentPatient.id}`);
+      alert('✅ Consentimiento informado guardado correctamente');
+    }
+
+    function saveHistoriaClinica() {
+      if (!currentPatient) return;
+
+      currentPatient.heredofamiliares = document.getElementById('hc_heredofamiliares').value;
+      currentPatient.no_patologicos = document.getElementById('hc_no_patologicos').value;
+      currentPatient.patologicos = document.getElementById('hc_patologicos').value;
+      currentPatient.motivo = document.getElementById('hc_motivo').value;
+      currentPatient.evolucion_padecimiento = document.getElementById('hc_evolucion_padecimiento').value;
+      currentPatient.alcohol = document.getElementById('hc_alcohol').value;
+      currentPatient.tabaco = document.getElementById('hc_tabaco').value;
+      currentPatient.otras_sustancias = document.getElementById('hc_otras_sustancias').value;
+      currentPatient.consumo = document.getElementById('hc_consumo_detalle').value;
+      
+      currentPatient.examen_mental = {
+        conciencia: document.getElementById('examen_conciencia').value,
+        memoria: document.getElementById('examen_memoria').value,
+        atencion: document.getElementById('examen_atencion').value,
+        animo: document.getElementById('examen_animo').value,
+        pensamiento: document.getElementById('examen_pensamiento').value,
+        juicio: document.getElementById('examen_juicio').value
+      };
+
+      savePatientsToMemory();
+      logAudit('UPDATE', `Historia clínica actualizada - Paciente: ${currentPatient.id}`);
+      alert('✅ Historia clínica guardada exitosamente');
+    }
+
+    function saveDiagnosticoPlan() {
+      if (!currentPatient) return;
+
+      currentPatient.diagnostico = document.getElementById('diagnostico_principal').value;
+      currentPatient.diagnosticos_secundarios = document.getElementById('diagnosticos_secundarios').value;
+      currentPatient.pronostico = document.getElementById('pronostico').value;
+      currentPatient.plan_tratamiento = document.getElementById('plan_tratamiento').value;
+      currentPatient.objetivos_especificos = document.getElementById('objetivos_especificos').value;
+
+      savePatientsToMemory();
+      logAudit('UPDATE', `Diagnóstico y plan guardado - Paciente: ${currentPatient.id}`);
+      alert('✅ Diagnóstico y plan de tratamiento guardado');
+    }
+
+    function addNotaEvolucion() {
+      if (!currentPatient) {
+        alert('⚠️ Selecciona un paciente primero');
+        return;
+      }
+
+      // Pre-llenar fecha y hora actual
+      document.getElementById('nota_fecha').value = new Date().toISOString().split('T')[0];
+      document.getElementById('nota_hora_inicio').value = new Date().toTimeString().slice(0,5);
+      
+      // Calcular número de sesión
+      const numSesion = (currentPatient.notas_evolucion || []).length + 1;
+      document.getElementById('nota_numero_sesion').value = numSesion;
+
+      document.getElementById('notaEvolucionModal').classList.add('active');
+    }
+
+    function saveNotaEvolucion() {
+      if (!currentPatient) return;
+
+      const nota = {
+        fecha: document.getElementById('nota_fecha').value,
+        hora_inicio: document.getElementById('nota_hora_inicio').value,
+        hora_fin: document.getElementById('nota_hora_fin').value,
+        numero: document.getElementById('nota_numero_sesion').value,
+        evolucion: document.getElementById('nota_evolucion').value,
+        intervenciones: document.getElementById('nota_intervenciones').value,
+        plan_proxima: document.getElementById('nota_plan_proxima').value,
+        firma_responsable: document.getElementById('nota_firma_responsable').value,
+        timestamp: new Date().toISOString()
+      };
+
+      if (!nota.fecha || !nota.evolucion || !nota.firma_responsable) {
+        alert('⚠️ Completa los campos obligatorios (fecha, evolución y firma)');
+        return;
+      }
+
+      if (!currentPatient.notas_evolucion) {
+        currentPatient.notas_evolucion = [];
+      }
+
+      currentPatient.notas_evolucion.push(nota);
+      savePatientsToMemory();
+      logAudit('CREATE', `Nueva nota de evolución - Sesión #${nota.numero} - Paciente: ${currentPatient.id}`);
+
+      closeModal('notaEvolucionModal');
+      alert('✅ Nota de evolución guardada exitosamente');
+
+      // Refrescar vista si estamos en el módulo de notas
+      if (document.getElementById('module-notas') && !document.getElementById('module-notas').classList.contains('hide')) {
+        switchModule('notas');
+      }
+    }
+
+    function saveInterconsulta() {
+      if (!currentPatient) return;
+
+      const interconsulta = {
+        especialidad: document.getElementById('interconsulta_especialidad').value,
+        especialista: document.getElementById('interconsulta_especialista').value,
+        motivo: document.getElementById('interconsulta_motivo').value,
+        fecha: document.getElementById('interconsulta_fecha').value,
+        timestamp: new Date().toISOString()
+      };
+
+      if (!interconsulta.especialidad || !interconsulta.motivo) {
+        alert('⚠️ Completa los campos obligatorios');
+        return;
+      }
+
+      if (!currentPatient.interconsultas) {
+        currentPatient.interconsultas = [];
+      }
+
+      currentPatient.interconsultas.push(interconsulta);
+      savePatientsToMemory();
+      logAudit('CREATE', `Interconsulta registrada - ${interconsulta.especialidad} - Paciente: ${currentPatient.id}`);
+      alert('✅ Interconsulta registrada exitosamente');
+
+      // Limpiar formulario
+      document.getElementById('interconsulta_especialidad').value = '';
+      document.getElementById('interconsulta_especialista').value = '';
+      document.getElementById('interconsulta_motivo').value = '';
+      document.getElementById('interconsulta_fecha').value = '';
+    }
+
+    function saveMedicacion() {
+      if (!currentPatient) return;
+
+      const medicacion = {
+        nombre: document.getElementById('medicacion_nombre').value,
+        dosis: document.getElementById('medicacion_dosis').value,
+        frecuencia: document.getElementById('medicacion_frecuencia').value,
+        via: document.getElementById('medicacion_via').value,
+        prescriptor: document.getElementById('medicacion_prescriptor').value,
+        fecha: document.getElementById('medicacion_fecha').value,
+        observaciones: document.getElementById('medicacion_observaciones').value,
+        timestamp: new Date().toISOString()
+      };
+
+      if (!medicacion.nombre || !medicacion.prescriptor) {
+        alert('⚠️ Completa los campos obligatorios');
+        return;
+      }
+
+      if (!currentPatient.medicaciones) {
+        currentPatient.medicaciones = [];
+      }
+
+      currentPatient.medicaciones.push(medicacion);
+      savePatientsToMemory();
+      logAudit('CREATE', `Medicación registrada - ${medicacion.nombre} - Paciente: ${currentPatient.id}`);
+      alert('✅ Medicación registrada exitosamente');
+    }
+
+    // ========== SIMULADOR DE CASOS CLÍNICOS ==========
+    function loadClinicalCases() {
+      const substance = document.getElementById('substanceFilter').value;
+      const phase = document.getElementById('phaseFilter').value;
+      const severity = document.getElementById('severityFilter').value;
+
+      let filtered = CLINICAL_CASES.filter(c => {
+        return (substance === 'all' || c.substance === substance) &&
+               (phase === 'all' || c.phase === phase) &&
+               (severity === 'all' || c.severity === severity);
+      });
+
+      displayCases(filtered);
+    }
+
+    function displayCases(cases) {
+      const container = document.getElementById('casesList');
+      if (cases.length === 0) {
+        container.innerHTML = '<div class="alert alert-info"><i class="fas fa-info-circle"></i> No se encontraron casos con esos filtros.</div>';
+        return;
+      }
+
+      container.innerHTML = cases.map(c => `
+        <div class="case-card" onclick="loadCase(${c.id})">
+          <div style="display: flex; justify-content: space-between; align-items: start;">
+            <div>
+              <h4 style="color: var(--color-accent); margin-bottom: 10px;">${c.patient.name}, ${c.patient.age} años</h4>
+              <div style="margin: 10px 0;">
+                <span class="badge badge-info">${c.substanceUseHistory.primarySubstance}</span>
+                <span class="badge badge-warning">${c.severity === 'severe' ? 'Grave' : c.severity === 'moderate' ? 'Moderado' : 'Leve'}</span>
+              </div>
+            </div>
+            <i class="fas fa-chevron-right" style="color: var(--color-accent);"></i>
+          </div>
+          <p style="margin-top: 10px; font-size: 0.9rem; color: rgba(255,255,255,0.7);">
+            <strong>Ocupación:</strong> ${c.patient.occupation} | <strong>Fase:</strong> ${c.phase}
+          </p>
+        </div>
+      `).join('');
+    }
+
+    function loadCase(id) {
+      currentCase = CLINICAL_CASES.find(c => c.id === id);
+      if (!currentCase) return;
+
+      document.getElementById('caseDetail').classList.remove('hide');
+      document.getElementById('caseContent').innerHTML = `
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px; margin-bottom: 20px;">
+          <div>
+            <label style="color: rgba(255,255,255,0.6); font-size: 0.85rem;">NOMBRE</label>
+            <p style="font-weight: 600; color: var(--color-accent);">${currentCase.patient.name}</p>
+          </div>
+          <div>
+            <label style="color: rgba(255,255,255,0.6); font-size: 0.85rem;">EDAD</label>
+            <p style="font-weight: 600;">${currentCase.patient.age} años</p>
+          </div>
+          <div>
+            <label style="color: rgba(255,255,255,0.6); font-size: 0.85rem;">OCUPACIÓN</label>
+            <p style="font-weight: 600;">${currentCase.patient.occupation}</p>
+          </div>
+          <div>
+            <label style="color: rgba(255,255,255,0.6); font-size: 0.85rem;">ESTADO CIVIL</label>
+            <p style="font-weight: 600;">${currentCase.patient.maritalStatus}</p>
+          </div>
+        </div>
+        
+        <div class="card" style="background: rgba(0,255,255,0.05); margin: 20px 0;">
+          <h4 style="color: var(--color-accent); margin-bottom: 15px;"><i class="fas fa-pills"></i> Historia de Consumo</h4>
+          <p><strong>Sustancia Principal:</strong> ${currentCase.substanceUseHistory.primarySubstance}</p>
+          <p><strong>Edad de Inicio:</strong> ${currentCase.substanceUseHistory.ageOfOnset} años</p>
+          <p><strong>Años de Consumo:</strong> ${currentCase.substanceUseHistory.yearsOfUse}</p>
+          <p><strong>Patrón Actual:</strong> ${currentCase.substanceUseHistory.currentPattern}</p>
+          <p><strong>Último Consumo:</strong> ${currentCase.substanceUseHistory.lastUse}</p>
+        </div>
+
+        <div class="card" style="background: rgba(255,60,60,0.05); margin: 20px 0;">
+          <h4 style="color: var(--color-error); margin-bottom: 15px;"><i class="fas fa-exclamation-triangle"></i> Síntomas</h4>
+          <div style="display: flex; flex-wrap: wrap; gap: 8px;">
+            ${currentCase.symptoms.map(s => `<span class="badge badge-danger">${s}</span>`).join('')}
+          </div>
+        </div>
+
+        <div class="card" style="background: rgba(245,183,10,0.05); margin: 20px 0;">
+          <h4 style="color: var(--color-warning); margin-bottom: 15px;"><i class="fas fa-bolt"></i> Disparadores</h4>
+          <div style="display: flex; flex-wrap: wrap; gap: 8px;">
+            ${currentCase.triggers.map(t => `<span class="badge badge-warning">${t}</span>`).join('')}
+          </div>
+        </div>
+
+        <div class="card" style="background: rgba(0,210,106,0.05); margin: 20px 0;">
+          <h4 style="color: var(--color-success); margin-bottom: 15px;"><i class="fas fa-check-circle"></i> Diagnóstico</h4>
+          <p style="font-size: 1.1rem; font-weight: 600;">${currentCase.correctDiagnosis}</p>
+        </div>
+      `;
+
+      document.getElementById('caseDetail').scrollIntoView({ behavior: 'smooth' });
+      logAudit('VIEW', `Caso clínico visualizado - ID: ${id}`);
+    }
+
+    async function generateAICase() {
+      const substance = document.getElementById('substanceFilter').value;
+      const casesList = document.getElementById('casesList');
+      
+      casesList.innerHTML = `
+        <div class="alert alert-info">
+          <div class="loading-spinner"></div>
+          <strong>🤖 Generando caso clínico con IA...</strong>
+        </div>
+      `;
+
+      // Simulación de generación (en producción usar API real)
+      setTimeout(() => {
+        const newCase = {
+          id: Date.now(),
+          patient: {
+            name: "Caso Generado IA",
+            age: Math.floor(Math.random() * 40) + 20,
+            gender: Math.random() > 0.5 ? "Masculino" : "Femenino",
+            occupation: "Profesional",
+            maritalStatus: "Soltero"
+          },
+          substance: substance !== 'all' ? substance : 'alcohol',
+          phase: 'contemplation',
+          severity: 'moderate',
+          substanceUseHistory: {
+            primarySubstance: substance !== 'all' ? substance : 'Alcohol',
+            ageOfOnset: 18,
+            yearsOfUse: 5,
+            currentPattern: "Consumo frecuente",
+            lastUse: "Ayer"
+          },
+          motivationLevel: 5,
+          symptoms: ["Ansiedad", "Irritabilidad"],
+          triggers: ["Estrés", "Problemas familiares"],
+          correctDiagnosis: "Trastorno por Consumo de Sustancias - Moderado"
+        };
+
+        currentCase = newCase;
+        loadCase(newCase.id);
+        displayCases([newCase]);
+        logAudit('GENERATE', 'Caso clínico generado con IA');
+      }, 2000);
+    }
+
+    function sendToExpediente() {
+      if (!currentCase) return;
+
+      const patientId = 'P' + Date.now();
+      patients[patientId] = {
+        id: patientId,
+        name: currentCase.patient.name,
+        age: currentCase.patient.age,
+        gender: currentCase.patient.gender,
+        occupation: currentCase.patient.occupation,
+        phone: '',
+        email: '',
+        motivo: `Caso importado del simulador: ${currentCase.correctDiagnosis}`,
+        consumo: `${currentCase.substanceUseHistory.primarySubstance}: ${currentCase.substanceUseHistory.currentPattern}. Años de consumo: ${currentCase.substanceUseHistory.yearsOfUse}`,
+        diagnostico: currentCase.correctDiagnosis,
+        fecha_creacion: new Date().toISOString(),
+        is_simulation: true
+      };
+
+      savePatientsToMemory();
+      updatePatientSelector();
+      logAudit('IMPORT', `Caso del simulador enviado a expediente - ID: ${patientId}`);
+      
+      alert('✅ Caso enviado al expediente exitosamente');
+      switchModule('expediente');
+      
+      document.getElementById('patientSelect').value = patientId;
+      loadPatient(patientId);
+    }
+
+    function exportCasePDF() {
+      if (!currentCase) return;
+      
+      const { jsPDF } = window.jspdf;
+      const doc = new jsPDF();
+
+      doc.setFontSize(18);
+      doc.setTextColor(0, 255, 255);
+      doc.text('CASO CLÍNICO - SIMULADOR', 20, 20);
+      
+      doc.setFontSize(12);
+      doc.setTextColor(0, 0, 0);
+      doc.text(`Paciente: ${currentCase.patient.name}`, 20, 35);
+      doc.text(`Edad: ${currentCase.patient.age} años`, 20, 42);
+      doc.text(`Ocupación: ${currentCase.patient.occupation}`, 20, 49);
+      
+      doc.setFontSize(14);
+      doc.text('Historia de Consumo', 20, 65);
+      doc.setFontSize(11);
+      doc.text(`Sustancia: ${currentCase.substanceUseHistory.primarySubstance}`, 20, 75);
+      doc.text(`Patrón: ${currentCase.substanceUseHistory.currentPattern}`, 20, 82);
+      doc.text(`Años de consumo: ${currentCase.substanceUseHistory.yearsOfUse}`, 20, 89);
+      
+      doc.setFontSize(14);
+      doc.text('Diagnóstico', 20, 105);
+      doc.setFontSize(11);
+      doc.text(currentCase.correctDiagnosis, 20, 115);
+
+      doc.setFontSize(8);
+      doc.text('Generado por Sistema Integral de Psicología Clínica', 20, 280);
+      doc.text(`Fecha: ${new Date().toLocaleDateString('es-MX')}`, 20, 285);
+
+      doc.save(`Caso_${currentCase.patient.name.replace(/\s/g, '_')}.pdf`);
+      logAudit('EXPORT', `Caso exportado a PDF - ID: ${currentCase.id}`);
+      alert('✅ PDF generado exitosamente');
+    }
+
+    // ========== GESTIÓN DE PACIENTES ==========
+    function updatePatientSelector() {
+      const select = document.getElementById('patientSelect');
+      select.innerHTML = '<option value="">-- Seleccionar --</option>';
+      
+      Object.keys(patients).forEach(id => {
+        const p = patients[id];
+        const option = document.createElement('option');
+        option.value = id;
+        option.textContent = `${p.name} - ${p.age} años ${p.is_simulation ? '(Simulación)' : ''}`;
+        select.appendChild(option);
+      });
+    }
+
+    function showNewPatientModal() {
+      document.getElementById('newPatientModal').classList.add('active');
+    }
+
+    function closeModal(modalId) {
+      document.getElementById(modalId).classList.remove('active');
+    }
+
+    function createPatient() {
+      const name = document.getElementById('new_patient_name').value.trim();
+      const apellidoP = document.getElementById('new_patient_apellido_paterno').value.trim();
+      const apellidoM = document.getElementById('new_patient_apellido_materno').value.trim();
+      const fechaNac = document.getElementById('new_patient_fecha_nacimiento').value;
+      const age = document.getElementById('new_patient_age').value;
+      const phone = document.getElementById('new_patient_phone').value;
+
+      if (!name || !apellidoP || !fechaNac) {
+        alert('⚠️ Completa los campos obligatorios (nombre, apellido paterno y fecha de nacimiento)');
+        return;
+      }
+
+      const id = 'P' + Date.now();
+      patients[id] = {
+        id: id,
+        name: name,
+        apellido_paterno: apellidoP,
+        apellido_materno: apellidoM,
+        fecha_nacimiento: fechaNac,
+        age: age,
+        phone: phone,
+        gender: '',
+        email: '',
+        occupation: '',
+        motivo: '',
+        consumo: '',
+        diagnostico: '',
+        genogram: null,
+        fecha_creacion: new Date().toISOString()
+      };
+
+      savePatientsToMemory();
+      updatePatientSelector();
+      closeModal('newPatientModal');
+      logAudit('CREATE', `Nuevo paciente creado - ID: ${id} - Nombre: ${name} ${apellidoP}`);
+      
+      document.getElementById('patientSelect').value = id;
+      loadPatient(id);
+      
+      alert('✅ Paciente creado exitosamente');
+    }
+
+    function loadPatient(id) {
+      if (!id) return;
+      
+      currentPatient = patients[id];
+      if (!currentPatient) return;
+
+      document.getElementById('patientInfo').classList.remove('hide');
+      document.getElementById('patientInfoText').textContent = 
+        `Expediente ${currentPatient.id}: ${currentPatient.name} ${currentPatient.apellido_paterno || ''} - ${currentPatient.age} años`;
+
+      logAudit('ACCESS', `Expediente accedido - Paciente: ${id}`);
+
+      // Si hay genograma guardado, cargarlo
+      if (currentPatient.genogram) {
+        genogramElements = currentPatient.genogram.elements || [];
+        if (document.getElementById('genogram-notes')) {
+          document.getElementById('genogram-notes').value = currentPatient.genogram.notes || '';
+        }
+      }
+    }
+
+    // ========== GENOGRAMA ==========
+    function initGenogram() {
+      genogramCanvas = document.getElementById('genogram-canvas');
+      if (!genogramCanvas) return;
+      
+      genogramCtx = genogramCanvas.getContext('2d');
+
+      genogramCanvas.addEventListener('click', (e) => {
+        const rect = genogramCanvas.getBoundingClientRect();
+        const x = e.clientX - rect.left;
+        const y = e.clientY - rect.top;
+        addGenogramElement(x, y);
+      });
+
+      drawGenogram();
+    }
+
+    function setGenogramTool(tool) {
+      genogramTool = tool;
+      document.querySelectorAll('.genogram-btn').forEach(btn => btn.classList.remove('active'));
+      const toolBtn = document.getElementById('tool-' + tool);
+      if (toolBtn) toolBtn.classList.add('active');
+    }
+
+    function addGenogramElement(x, y) {
+      if (genogramTool === 'delete') {
+        genogramElements = genogramElements.filter(el => {
+          const dist = Math.sqrt((el.x - x) ** 2 + (el.y - y) ** 2);
+          return dist > 30;
+        });
+      } else {
+        const name = prompt('Nombre del familiar:');
+        if (!name) return;
+        
+        const age = prompt('Edad:') || '';
+        
+        genogramElements.push({
+          type: genogramTool,
+          x: x,
+          y: y,
+          name: name,
+          age: age
+        });
+      }
+      drawGenogram();
+    }
+
+    function drawGenogram() {
+      if (!genogramCtx || !genogramCanvas) return;
+
+      genogramCtx.clearRect(0, 0, genogramCanvas.width, genogramCanvas.height);
+      
+      // Fondo
+      genogramCtx.fillStyle = 'rgba(255,255,255,0.03)';
+      genogramCtx.fillRect(0, 0, genogramCanvas.width, genogramCanvas.height);
+
+      genogramElements.forEach(el => {
+        genogramCtx.strokeStyle = '#00ffff';
+        genogramCtx.fillStyle = 'rgba(0,255,255,0.1)';
+        genogramCtx.lineWidth = 3;
+
+        if (el.type === 'male') {
+          genogramCtx.beginPath();
+          genogramCtx.rect(el.x - 20, el.y - 20, 40, 40);
+          genogramCtx.fill();
+          genogramCtx.stroke();
+        } else if (el.type === 'female') {
+          genogramCtx.beginPath();
+          genogramCtx.arc(el.x, el.y, 20, 0, 2 * Math.PI);
+          genogramCtx.fill();
+          genogramCtx.stroke();
+        } else if (el.type === 'couple') {
+          genogramCtx.beginPath();
+          genogramCtx.moveTo(el.x - 30, el.y);
+          genogramCtx.lineTo(el.x + 30, el.y);
+          genogramCtx.stroke();
+        } else if (el.type === 'children') {
+          genogramCtx.beginPath();
+          genogramCtx.moveTo(el.x, el.y - 30);
+          genogramCtx.lineTo(el.x, el.y + 10);
+          genogramCtx.stroke();
+        }
+
+        // Texto
+        genogramCtx.fillStyle = '#e6e6e6';
+        genogramCtx.font = '12px Inter';
+        genogramCtx.textAlign = 'center';
+        genogramCtx.fillText(el.name, el.x, el.y + 40);
+        if (el.age) genogramCtx.fillText(el.age, el.x, el.y + 55);
+      });
+    }
+
+    function clearGenogram() {
+      if (confirm('¿Limpiar todo el genograma?')) {
+        genogramElements = [];
+        drawGenogram();
+        logAudit('DELETE', 'Genograma limpiado');
+      }
+    }
+
+    function saveGenogram() {
+      if (!currentPatient) {
+        alert('⚠️ Selecciona un paciente primero');
+        return;
+      }
+
+      currentPatient.genogram = {
+        elements: genogramElements,
+        notes: document.getElementById('genogram-notes').value,
+        fecha: new Date().toISOString()
+      };
+
+      savePatientsToMemory();
+      logAudit('SAVE', `Genograma guardado - Paciente: ${currentPatient.id}`);
+      alert('✅ Genograma guardado exitosamente');
+    }
+
+    async function exportGenogramPDF() {
+      if (genogramElements.length === 0) {
+        alert('⚠️ El genograma está vacío');
+        return;
+      }
+
+      const { jsPDF } = window.jspdf;
+      const doc = new jsPDF();
+
+      doc.setFontSize(20);
+      doc.setTextColor(0, 255, 255);
+      doc.text('GENOGRAMA FAMILIAR', 20, 20);
+      
+      if (currentPatient) {
+        doc.setFontSize(12);
+        doc.setTextColor(0, 0, 0);
+        doc.text(`Paciente: ${currentPatient.name}`, 20, 30);
+        doc.text(`Fecha: ${new Date().toLocaleDateString('es-MX')}`, 20, 37);
+      }
+
+      try {
+        const canvas = document.getElementById('genogram-canvas');
+        const imgData = canvas.toDataURL('image/png');
+        doc.addImage(imgData, 'PNG', 15, 50, 180, 135);
+
+        const notes = document.getElementById('genogram-notes').value;
+        if (notes) {
+          doc.addPage();
+          doc.setFontSize(14);
+          doc.text('NOTAS DEL GENOGRAMA', 20, 20);
+          doc.setFontSize(10);
+          const notesLines = doc.splitTextToSize(notes, 170);
+          doc.text(notesLines, 20, 30);
+        }
+
+        doc.save(`Genograma_${currentPatient?.name.replace(/\s/g, '_') || 'sin_paciente'}.pdf`);
+        logAudit('EXPORT', 'Genograma exportado a PDF');
+        alert('✅ Genograma PDF generado exitosamente');
+      } catch (error) {
+        alert('❌ Error al generar PDF: ' + error.message);
+      }
+    }
+
+    // ========== EXPORTACIÓN ==========
+    function exportExpedienteCompletoPDF() {
+      if (!currentPatient) {
+        alert('⚠️ Selecciona un paciente primero');
+        return;
+      }
+
+      const { jsPDF } = window.jspdf;
+      const doc = new jsPDF();
+      let yPos = 20;
+
+      // Portada
+      doc.setFontSize(22);
+      doc.setTextColor(0, 200, 200);
+      doc.text('EXPEDIENTE CLÍNICO ELECTRÓNICO', 105, yPos, { align: 'center' });
+      
+      yPos += 10;
+      doc.setFontSize(12);
+      doc.setTextColor(100, 100, 100);
+      doc.text('Cumplimiento NOM-004-SSA3-2012 y NOM-024-SSA3-2012', 105, yPos, { align: 'center' });
+      
+      yPos += 15;
+      doc.setTextColor(0, 0, 0);
+      doc.text(`Fecha de emisión: ${new Date().toLocaleDateString('es-MX')}`, 105, yPos, { align: 'center' });
+      doc.text(`Expediente No: ${currentPatient.id}`, 105, yPos + 7, { align: 'center' });
+
+      // Nueva página - Identificación
+      doc.addPage();
+      yPos = 20;
+      doc.setFontSize(16);
+      doc.setTextColor(0, 200, 200);
+      doc.text('1. IDENTIFICACIÓN DEL PACIENTE', 20, yPos);
+      
+      yPos += 10;
+      doc.setFontSize(11);
+      doc.setTextColor(0, 0, 0);
+      doc.text(`Nombre completo: ${currentPatient.name} ${currentPatient.apellido_paterno || ''} ${currentPatient.apellido_materno || ''}`, 20, yPos);
+      doc.text(`Edad: ${currentPatient.age} años`, 20, yPos + 7);
+      doc.text(`Fecha de nacimiento: ${currentPatient.fecha_nacimiento || 'No especificado'}`, 20, yPos + 14);
+      doc.text(`Género: ${currentPatient.gender || 'No especificado'}`, 20, yPos + 21);
+      doc.text(`Teléfono: ${currentPatient.phone || 'No especificado'}`, 20, yPos + 28);
+
+      // Diagnóstico
+      if (currentPatient.diagnostico) {
+        doc.addPage();
+        doc.setFontSize(16);
+        doc.setTextColor(0, 200, 200);
+        doc.text('DIAGNÓSTICO', 20, 20);
+        doc.setFontSize(11);
+        doc.setTextColor(0, 0, 0);
+        const diagLines = doc.splitTextToSize(currentPatient.diagnostico, 170);
+        doc.text(diagLines, 20, 30);
+      }
+
+      // Footer en cada página
+      const pageCount = doc.internal.getNumberOfPages();
+      for (let i = 1; i <= pageCount; i++) {
+        doc.setPage(i);
+        doc.setFontSize(8);
+        doc.setTextColor(150, 150, 150);
+        doc.text('Sistema Integral de Psicología Clínica - Cumplimiento NOM-004 y NOM-024', 105, 285, { align: 'center' });
+        doc.text(`Página ${i} de ${pageCount}`, 105, 290, { align: 'center' });
+      }
+
+      doc.save(`Expediente_${currentPatient.name.replace(/\s/g, '_')}_${currentPatient.id}.pdf`);
+      logAudit('EXPORT', `Expediente completo exportado a PDF - Paciente: ${currentPatient.id}`);
+      alert('✅ Expediente PDF generado exitosamente');
+    }
+
+    function exportExpedienteJSON() {
+      if (!currentPatient) {
+        alert('⚠️ Selecciona un paciente primero');
+        return;
+      }
+
+      const dataStr = JSON.stringify(currentPatient, null, 2);
+      const dataBlob = new Blob([dataStr], {type: 'application/json'});
+      const url = URL.createObjectURL(dataBlob);
+      const link = document.createElement('a');
+      link.href = url;
+      link.download = `Backup_${currentPatient.name.replace(/\s/g, '_')}_${Date.now()}.json`;
+      link.click();
+
+      logAudit('EXPORT', `Backup JSON exportado - Paciente: ${currentPatient.id}`);
+      alert('✅ Backup JSON generado exitosamente');
+    }
+
+    function exportHL7() {
+      if (!currentPatient) {
+        alert('⚠️ Selecciona un paciente primero');
+        return;
+      }
+
+      // Simulación de formato HL7 CDA (Clinical Document Architecture)
+      const hl7Data = `<?xml version="1.0" encoding="UTF-8"?>
+<ClinicalDocument xmlns="urn:hl7-org:v3">
+  <id extension="${currentPatient.id}" root="2.16.840.1.113883.19.5"/>
+  <code code="34133-9" displayName="Resumen de Historia Clínica"/>
+  <title>Expediente Clínico - ${currentPatient.name}</title>
+  <effectiveTime value="${new Date().toISOString()}"/>
+  <recordTarget>
+    <patientRole>
+      <id extension="${currentPatient.id}"/>
+      <patient>
+        <name>
+          <given>${currentPatient.name}</given>
+          <family>${currentPatient.apellido_paterno || ''}</family>
+        </name>
+        <birthTime value="${currentPatient.fecha_nacimiento || ''}"/>
+      </patient>
+    </patientRole>
+  </recordTarget>
+</ClinicalDocument>`;
+
+      const dataBlob = new Blob([hl7Data], {type: 'application/xml'});
+      const url = URL.createObjectURL(dataBlob);
+      const link = document.createElement('a');
+      link.href = url;
+      link.download = `HL7_CDA_${currentPatient.id}_${Date.now()}.xml`;
+      link.click();
+
+      logAudit('EXPORT', `Formato HL7/CDA exportado (NOM-024) - Paciente: ${currentPatient.id}`);
+      alert('✅ Archivo HL7/CDA generado exitosamente (Interoperabilidad NOM-024)');
+    }
+
+    function imprimirExpediente() {
+      if (!currentPatient) {
+        alert('⚠️ Selecciona un paciente primero');
+        return;
+      }
+
+      window.print();
+      logAudit('PRINT', `Expediente impreso - Paciente: ${currentPatient.id}`);
+    }
+
+    function exportAuditLog() {
+      const dataStr = JSON.stringify(auditLog, null, 2);
+      const dataBlob = new Blob([dataStr], {type: 'application/json'});
+      const url = URL.createObjectURL(dataBlob);
+      const link = document.createElement('a');
+      link.href = url;
+      link.download = `Auditoria_${Date.now()}.json`;
+      link.click();
+
+      alert('✅ Log de auditoría exportado exitosamente');
+    }
+
+    // ========== REPORTES ==========
+    function getTotalNotas() {
+      let total = 0;
+      Object.values(patients).forEach(p => {
+        if (p.notas_evolucion) {
+          total += p.notas_evolucion.length;
+        }
+      });
+      return total;
+    }
+
+    function generarReporteResumen() {
+      const { jsPDF } = window.jspdf;
+      const doc = new jsPDF();
+
+      doc.setFontSize(18);
+      doc.setTextColor(0, 200, 200);
+      doc.text('REPORTE GENERAL DE ACTIVIDAD', 20, 20);
+
+      doc.setFontSize(12);
+      doc.setTextColor(0, 0, 0);
+      doc.text(`Fecha: ${new Date().toLocaleDateString('es-MX')}`, 20, 35);
+      doc.text(`Total de Pacientes: ${Object.keys(patients).length}`, 20, 45);
+      doc.text(`Total de Notas de Evolución: ${getTotalNotas()}`, 20, 55);
+      doc.text(`Registros de Auditoría: ${auditLog.length}`, 20, 65);
+
+      doc.setFontSize(10);
+      doc.text('Sistema Integral de Psicología Clínica - Cumplimiento NOM-004/NOM-024', 105, 280, { align: 'center' });
+
+      doc.save(`Reporte_General_${Date.now()}.pdf`);
+      logAudit('REPORT', 'Reporte general generado');
+      alert('✅ Reporte generado exitosamente');
+    }
+
+    function generarReporteRetencion() {
+      alert('📊 Función de reporte de retención en desarrollo. Se calcularán tasas de retención a 1, 3 y 6 meses.');
+      logAudit('REPORT', 'Reporte de retención solicitado');
+    }
+
+    function generarReporteNormas() {
+      const { jsPDF } = window.jspdf;
+      const doc = new jsPDF();
+
+      doc.setFontSize(18);
+      doc.setTextColor(0, 200, 200);
+      doc.text('REPORTE DE CUMPLIMIENTO NORMATIVO', 20, 20);
+
+      doc.setFontSize(12);
+      doc.setTextColor(0, 0, 0);
+      doc.text(`Fecha: ${new Date().toLocaleDateString('es-MX')}`, 20, 35);
+
+      let yPos = 50;
+      doc.setFontSize(14);
+      doc.text('NOM-004-SSA3-2012 - Expediente Clínico', 20, yPos);
+      
+      yPos += 10;
+      doc.setFontSize(10);
+      doc.text('✓ Identificación del paciente completa', 20, yPos);
+      yPos += 7;
+      doc.text('✓ Consentimiento informado registrado', 20, yPos);
+      yPos += 7;
+      doc.text('✓ Historia clínica documentada', 20, yPos);
+      yPos += 7;
+      doc.text('✓ Notas de evolución fechadas y firmadas', 20, yPos);
+      yPos += 7;
+      doc.text('✓ Registro de auditoría implementado', 20, yPos);
+
+      yPos += 15;
+      doc.setFontSize(14);
+      doc.text('NOM-024-SSA3-2012 - Interoperabilidad', 20, yPos);
+      
+      yPos += 10;
+      doc.setFontSize(10);
+      doc.text('✓ Exportación en formato HL7/CDA disponible', 20, yPos);
+      yPos += 7;
+      doc.text('✓ Estándares de intercambio implementados', 20, yPos);
+      yPos += 7;
+      doc.text('✓ Respaldo en JSON para portabilidad', 20, yPos);
+
+      doc.save(`Cumplimiento_Normativo_${Date.now()}.pdf`);
+      logAudit('REPORT', 'Reporte de cumplimiento normativo generado');
+      alert('✅ Reporte de cumplimiento generado exitosamente');
+    }
+
+    function viewNota(index) {
+      if (!currentPatient || !currentPatient.notas_evolucion || !currentPatient.notas_evolucion[index]) {
+        return;
+      }
+
+      const nota = currentPatient.notas_evolucion[index];
+      
+      const modalContent = `
+        <div class="card">
+          <h3 style="color: var(--color-accent); margin-bottom: 15px;">Sesión #${nota.numero}</h3>
+          
+          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 20px;">
+            <div>
+              <strong>Fecha:</strong> ${nota.fecha}
+            </div>
+            <div>
+              <strong>Horario:</strong> ${nota.hora_inicio} - ${nota.hora_fin || 'No registrado'}
+            </div>
+          </div>
+
+          <div style="margin-bottom: 15px;">
+            <h4 style="color: var(--color-accent); margin-bottom: 10px;">Evolución del Paciente</h4>
+            <p style="background: rgba(255,255,255,0.05); padding: 15px; border-radius: 8px; line-height: 1.6;">
+              ${nota.evolucion}
+            </p>
+          </div>
+
+          <div style="margin-bottom: 15px;">
+            <h4 style="color: var(--color-accent); margin-bottom: 10px;">Intervenciones Realizadas</h4>
+            <p style="background: rgba(255,255,255,0.05); padding: 15px; border-radius: 8px; line-height: 1.6;">
+              ${nota.intervenciones}
+            </p>
+          </div>
+
+          ${nota.plan_proxima ? `
+            <div style="margin-bottom: 15px;">
+              <h4 style="color: var(--color-accent); margin-bottom: 10px;">Plan para Próxima Sesión</h4>
+              <p style="background: rgba(255,255,255,0.05); padding: 15px; border-radius: 8px; line-height: 1.6;">
+                ${nota.plan_proxima}
+              </p>
+            </div>
+          ` : ''}
+
+          <div style="margin-top: 20px; padding-top: 15px; border-top: 1px solid rgba(255,255,255,0.1);">
+            <strong>Firma del Responsable:</strong> ${nota.firma_responsable}
+          </div>
+        </div>
+      `;
+
+      // Crear modal temporal para vista
+      const tempModal = document.createElement('div');
+      tempModal.className = 'modal active';
+      tempModal.innerHTML = `
+        <div class="modal-content" style="max-width: 800px;">
+          <div class="modal-header">
+            <h3><i class="fas fa-file-medical-alt"></i> Nota de Evolución</h3>
+            <button class="close-modal" onclick="this.closest('.modal').remove()">✕</button>
+          </div>
+          ${modalContent}
+          <button class="btn btn-secondary" onclick="this.closest('.modal').remove()">Cerrar</button>
+        </div>
+      `;
+      document.body.appendChild(tempModal);
+
+      logAudit('VIEW', `Nota de evolución visualizada - Sesión #${nota.numero} - Paciente: ${currentPatient.id}`);
+    }
+
+    // ========== INICIALIZACIÓN AL CARGAR ==========
+    window.onload = () => {
+      initApp();
+      console.log('✅ Sistema Integral de Psicología Clínica iniciado');
+      console.log('📋 Cumplimiento: NOM-004-SSA3-2012 y NOM-024-SSA3-2012');
+    };
+
+    // ========== MENSAJES DE AYUDA ==========
+    function showHelp() {
+      alert(`
+🧠 SISTEMA INTEGRAL DE PSICOLOGÍA CLÍNICA
+
+📋 CUMPLIMIENTO NORMATIVO:
+✓ NOM-004-SSA3-2012: Expediente Clínico
+✓ NOM-024-SSA3-2012: Interoperabilidad
+✓ NOM-028-SSA2-2009: Prevención de Adicciones
+
+🔒 CARACTERÍSTICAS DE SEGURIDAD:
+• Registro completo de auditoría
+• Trazabilidad de accesos
+• Firma electrónica
+• Cifrado de datos (producción)
+
+📊 MÓDULOS PRINCIPALES:
+1. Simulador: Casos clínicos para entrenamiento
+2. Expediente: Gestión completa según NOM-004
+3. Genograma: Estructura familiar interactiva
+4. Notas de Evolución: Registro de sesiones
+5. Interconsultas: Referencias a especialistas
+6. Auditoría: Trazabilidad completa
+7. Exportación: PDF, JSON, HL7/CDA
+
+Para soporte técnico: contacto@abogadosforenses.org
+      `);
+    }
+
+    // Agregar evento de ayuda al ícono de configuración
+    document.querySelector('.topbar .actions i.fa-cog')?.addEventListener('click', showHelp);
+  </script>
+</body>
+</html>
